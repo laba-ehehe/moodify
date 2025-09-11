@@ -15,17 +15,12 @@ app.use(cors({
 }));
 app.use(express.json());
 
-// Root route - THIS WAS MISSING!
+// Root route
 app.get('/', (req, res) => {
   res.json({ 
     message: 'Moodify Backend API is running!',
     status: 'success',
-    environment: process.env.NODE_ENV || 'production',
-    endpoints: {
-      health: '/health',
-      auth_login: '/auth/login',
-      auth_test: '/auth/test'
-    }
+    environment: process.env.NODE_ENV || 'production'
   });
 });
 
@@ -33,8 +28,7 @@ app.get('/', (req, res) => {
 app.get('/health', (req, res) => {
   res.json({ 
     status: 'healthy',
-    timestamp: new Date().toISOString(),
-    spotify_configured: !!(process.env.SPOTIFY_CLIENT_ID && process.env.SPOTIFY_CLIENT_SECRET)
+    timestamp: new Date().toISOString()
   });
 });
 
@@ -42,7 +36,7 @@ app.get('/health', (req, res) => {
 app.get('/auth/test', (req, res) => {
   res.json({
     message: 'Auth route working!',
-    spotify_client_id: process.env.SPOTIFY_CLIENT_ID ? 'Set ✅' : 'Missing ❌'
+    spotify_configured: !!process.env.SPOTIFY_CLIENT_ID
   });
 });
 
@@ -51,7 +45,6 @@ app.get('/auth/login', (req, res) => {
     return res.status(500).json({ error: 'Spotify not configured' });
   }
 
-  // Basic Spotify auth URL (we'll add full PKCE later)
   const authURL = `https://accounts.spotify.com/authorize?` +
     `response_type=code&` +
     `client_id=${process.env.SPOTIFY_CLIENT_ID}&` +
@@ -61,13 +54,7 @@ app.get('/auth/login', (req, res) => {
   res.redirect(authURL);
 });
 
-// 404 handler
-app.use('/*', (req, res) => {
-  res.status(404).json({ 
-    error: 'Route not found',
-    path: req.originalUrl 
-  });
-});
+// NO catch-all route - just let Express handle 404s naturally
 
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
