@@ -29,3 +29,20 @@ app.get('/health', (req, res) => {
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
+
+app.use(cors({
+  origin: [
+    process.env.FRONTEND_URL,
+    'http://localhost:3000',
+    'https://moodify-orpin.vercel.app/'
+  ],
+  credentials: true
+}));
+
+app.get('/health', (req, res) => {
+  res.json({ 
+    status: 'Server is running!',
+    timestamp: new Date().toISOString(),
+    environment: process.env.NODE_ENV || 'development'
+  });
+});
