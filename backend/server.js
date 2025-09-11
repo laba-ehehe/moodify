@@ -62,7 +62,7 @@ app.get('/auth/login', (req, res) => {
 });
 
 // 404 handler
-app.use('*', (req, res) => {
+app.use('/*', (req, res) => {
   res.status(404).json({ 
     error: 'Route not found',
     path: req.originalUrl 
