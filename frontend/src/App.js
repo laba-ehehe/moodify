@@ -50,7 +50,11 @@ function App() {
   };
 
   const handleLogin = () => {
-    window.location.href = 'http://localhost:5000/auth/login';
+    const API_BASE_URL = process.env.NODE_ENV === 'production' 
+      ? 'https://moodify-1aa2.onrender.com'
+      : 'http://localhost:5000';
+  
+    window.location.href = `${API_BASE_URL}/auth/login`;
   };
 
   const generatePlaylist = async (moodData, inputText) => {
