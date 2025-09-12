@@ -237,21 +237,51 @@ async function getValidSeeds(token) {
 }
 
 // ---------- Allowed feature keys for /v1/recommendations ----------
+// const ALLOWED_FEATURE_KEYS = new Set([
+//   // targets
+//   'target_acousticness','target_danceability','target_duration_ms','target_energy',
+//   'target_instrumentalness','target_key','target_liveness','target_loudness',
+//   'target_mode','target_popularity','target_speechiness','target_tempo',
+//   'target_time_signature','target_valence',
+//   // mins / maxes (supported by Spotify)
+//   'min_acousticness','max_acousticness','min_danceability','max_danceability',
+//   'min_duration_ms','max_duration_ms','min_energy','max_energy',
+//   'min_instrumentalness','max_instrumentalness','min_key','max_key',
+//   'min_liveness','max_liveness','min_loudness','max_loudness',
+//   'min_mode','max_mode','min_popularity','max_popularity',
+//   'min_speechiness','max_speechiness','min_tempo','max_tempo',
+//   'min_time_signature','max_time_signature','min_valence','max_valence'
+// ]);
 const ALLOWED_FEATURE_KEYS = new Set([
-  // targets
-  'target_acousticness','target_danceability','target_duration_ms','target_energy',
-  'target_instrumentalness','target_key','target_liveness','target_loudness',
-  'target_mode','target_popularity','target_speechiness','target_tempo',
-  'target_time_signature','target_valence',
-  // mins / maxes (supported by Spotify)
-  'min_acousticness','max_acousticness','min_danceability','max_danceability',
-  'min_duration_ms','max_duration_ms','min_energy','max_energy',
-  'min_instrumentalness','max_instrumentalness','min_key','max_key',
-  'min_liveness','max_liveness','min_loudness','max_loudness',
-  'min_mode','max_mode','min_popularity','max_popularity',
-  'min_speechiness','max_speechiness','min_tempo','max_tempo',
-  'min_time_signature','max_time_signature','min_valence','max_valence'
+  // target_*
+  'target_acousticness',
+  'target_danceability',
+  'target_duration_ms',
+  'target_energy',
+  'target_instrumentalness',
+  'target_key',
+  'target_liveness',
+  'target_mode',
+  'target_popularity',
+  'target_speechiness',
+  'target_time_signature',
+  'target_valence',
+
+  // min_*/max_* versions (Spotify supports these)
+  'min_acousticness','max_acousticness',
+  'min_danceability','max_danceability',
+  'min_duration_ms','max_duration_ms',
+  'min_energy','max_energy',
+  'min_instrumentalness','max_instrumentalness',
+  'min_key','max_key',
+  'min_liveness','max_liveness',
+  'min_mode','max_mode',
+  'min_popularity','max_popularity',
+  'min_speechiness','max_speechiness',
+  'min_time_signature','max_time_signature',
+  'min_valence','max_valence'
 ]);
+
 
 function sanitizeFeatures(obj) {
   const out = {};

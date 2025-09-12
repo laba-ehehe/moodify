@@ -68,8 +68,8 @@ function App() {
         target_valence: moodData.valence,
         target_danceability: moodData.danceability,
         target_acousticness: moodData.acousticness,
-        target_tempo: moodData.tempo,
-        target_loudness: moodData.loudness,
+        // target_tempo: moodData.tempo,
+        // target_loudness: moodData.loudness,
         target_mode: moodData.mode,
         limit: 20
       };
