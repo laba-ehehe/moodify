@@ -59,3 +59,43 @@ app.get('/auth/login', (req, res) => {
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
+
+// Add this route to your backend server.js
+app.get('/auth/callback', async (req, res) => {
+  const { code, state, error } = req.query;
+  
+  if (error) {
+    console.error('Spotify auth error:', error);
+    return res.redirect(`${process.env.FRONTEND_URL}?error=${error}`);
+  }
+  
+  if (!code) {
+    return res.redirect(`${process.env.FRONTEND_URL}?error=no_authorization_code`);
+  }
+
+  try {
+    // Exchange authorization code for access token
+    const tokenResponse = await axios.post('https://accounts.spotify.com/api/token', 
+      querystring.stringify({
+        grant_type: 'authorization_code',
+        code: code,
+        redirect_uri: process.env.SPOTIFY_REDIRECT_URI,
+        client_id: process.env.SPOTIFY_CLIENT_ID,
+        client_secret: process.env.SPOTIFY_CLIENT_SECRET,
+      }), {
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+      }
+    );
+    
+    const { access_token, refresh_token } = tokenResponse.data;
+    
+    // Redirect back to frontend with tokens
+    res.redirect(`${process.env.FRONTEND_URL}?access_token=${access_token}&refresh_token=${refresh_token}`);
+    
+  } catch (error) {
+    console.error('Token exchange error:', error.response?.data || error.message);
+    res.redirect(`${process.env.FRONTEND_URL}?error=token_exchange_failed`);
+  }
+});
