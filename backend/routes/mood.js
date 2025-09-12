@@ -11,7 +11,7 @@ router.post('/analyze-emoji', (req, res) => {
       return res.status(400).json({ error: 'Emojis array required' });
     }
     
-    const moodData = analyzeEmojiMood(emojis)
+    const moodData = analyzeEmojiMood(emojis);
     res.json(moodData);
   } catch (error) {
     console.error('Emoji analysis error:', error.message);
