@@ -106,3 +106,166 @@ router.post('/recommendations', authenticateSpotify, async (req, res) => {
 
   // Function to try getting recommendations
   const tryGetRecommendations = async (params, strategy) => {
+    try {
+      const requestUrl = `https://api.spotify.com/v1/recommendations?${params.toString()}`;
+      console.log(`Strategy: ${strategy}`);
+      console.log('Request URL:', requestUrl);
+      
+      const response = await axios.get(requestUrl, {
+        headers: {
+          'Authorization': `Bearer ${req.spotifyToken}`
+        }
+      });
+
+      return response;
+    } catch (error) {
+      console.log(`${strategy} failed:`, error.response?.status);
+      return null;
+    }
+  };
+
+  try {
+    let response = null;
+    let tracks = [];
+
+    // Strategy 1: Try with genre seeds first
+    console.log('Attempting with mood:', mood);
+    const genres = MOOD_TO_GENRES[mood] || MOOD_TO_GENRES.neutral;
+    
+    if (genres && genres.length > 0) {
+      const genreParams = new URLSearchParams({
+        limit: String(Math.min(limit, 100)),
+        market: 'US',
+        seed_genres: genres.slice(0, 5).join(',')
+      });
+
+      // Add audio features
+      if (features.energy !== undefined && features.energy >= 0 && features.energy <= 1) {
+        genreParams.append('target_energy', String(Number(features.energy).toFixed(2)));
+      }
+      if (features.valence !== undefined && features.valence >= 0 && features.valence <= 1) {
+        genreParams.append('target_valence', String(Number(features.valence).toFixed(2)));
+      }
+      if (features.danceability !== undefined && features.danceability >= 0 && features.danceability <= 1) {
+        genreParams.append('target_danceability', String(Number(features.danceability).toFixed(2)));
+      }
+
+      response = await tryGetRecommendations(genreParams, 'Genre-based');
+      
+      if (response && response.data.tracks && response.data.tracks.length > 0) {
+        console.log('Success with genres! Got', response.data.tracks.length, 'tracks');
+        return res.json(response.data);
+      }
+    }
+
+    // Strategy 2: Try with seed tracks
+    const seedTracks = MOOD_SEED_TRACKS[mood] || MOOD_SEED_TRACKS.neutral;
+    
+    if (seedTracks && seedTracks.length > 0) {
+      const trackParams = new URLSearchParams({
+        limit: String(Math.min(limit, 100)),
+        market: 'US',
+        seed_tracks: seedTracks.slice(0, 2).join(',')
+      });
+
+      // Add basic audio features
+      if (features.energy !== undefined) {
+        trackParams.append('target_energy', String(Number(features.energy).toFixed(2)));
+      }
+      if (features.valence !== undefined) {
+        trackParams.append('target_valence', String(Number(features.valence).toFixed(2)));
+      }
+
+      response = await tryGetRecommendations(trackParams, 'Track-based');
+      
+      if (response && response.data.tracks && response.data.tracks.length > 0) {
+        console.log('Success with seed tracks! Got', response.data.tracks.length, 'tracks');
+        return res.json(response.data);
+      }
+    }
+
+    // Strategy 3: Search for tracks and use as seeds
+    const searchQuery = mood === 'neutral' ? 'pop hits' : mood;
+    const searchUrl = `https://api.spotify.com/v1/search?q=${encodeURIComponent(searchQuery)}&type=track&limit=5&market=US`;
+    
+    const searchResponse = await axios.get(searchUrl, {
+      headers: {
+        'Authorization': `Bearer ${req.spotifyToken}`
+      }
+    });
+
+    if (searchResponse.data.tracks && searchResponse.data.tracks.items.length > 0) {
+      const foundTrackIds = searchResponse.data.tracks.items
+        .slice(0, 2)
+        .map(track => track.id);
+      
+      const searchBasedParams = new URLSearchParams({
+        limit: String(Math.min(limit, 100)),
+        market: 'US',
+        seed_tracks: foundTrackIds.join(',')
+      });
+
+      response = await tryGetRecommendations(searchBasedParams, 'Search-based');
+      
+      if (response && response.data.tracks && response.data.tracks.length > 0) {
+        console.log('Success with searched tracks! Got', response.data.tracks.length, 'tracks');
+        return res.json(response.data);
+      }
+    }
+
+    // If all strategies fail, return an error
+    throw new Error('Unable to get recommendations from Spotify');
+
+  } catch (error) {
+    console.error('All recommendation strategies failed');
+    console.error('Error:', error.message);
+    
+    res.status(error.response?.status || 500).json({
+      error: 'Failed to get recommendations. Please try again.',
+      details: error.response?.data,
+      message: 'The Spotify API may be experiencing issues.'
+    });
+  }
+});
+
+// Create playlist
+router.post('/create-playlist', authenticateSpotify, async (req, res) => {
+  const { name, description, trackUris, userId } = req.body;
+
+  try {
+    const playlistResponse = await axios.post(
+      `https://api.spotify.com/v1/users/${userId}/playlists`,
+      { name, description, public: false },
+      {
+        headers: {
+          'Authorization': `Bearer ${req.spotifyToken}`,
+          'Content-Type': 'application/json',
+        },
+      }
+    );
+
+    const playlistId = playlistResponse.data.id;
+
+    if (trackUris && trackUris.length > 0) {
+      await axios.post(
+        `https://api.spotify.com/v1/playlists/${playlistId}/tracks`,
+        { uris: trackUris },
+        {
+          headers: {
+            'Authorization': `Bearer ${req.spotifyToken}`,
+            'Content-Type': 'application/json',
+          },
+        }
+      );
+    }
+
+    res.json(playlistResponse.data);
+  } catch (error) {
+    console.error('Create playlist error:', error.response?.data || error.message);
+    res.status(error.response?.status || 500).json({
+      error: 'Failed to create playlist'
+    });
+  }
+});
+
+module.exports = router;

@@ -1,218 +1,3 @@
-// // Emoji to mood mapping
-// const emojiMoodMap = {
-//   // Happy/Joyful
-//   '😀': { energy: 0.8, valence: 0.9, danceability: 0.7 },
-//   '😃': { energy: 0.8, valence: 0.9, danceability: 0.7 },
-//   '😄': { energy: 0.9, valence: 0.9, danceability: 0.8 },
-//   '😁': { energy: 0.8, valence: 0.8, danceability: 0.7 },
-//   '😊': { energy: 0.6, valence: 0.8, danceability: 0.5 },
-//   '😍': { energy: 0.7, valence: 0.9, danceability: 0.6 },
-//   '🥰': { energy: 0.5, valence: 0.8, danceability: 0.4 },
-  
-//   // Energetic/Party
-//   '🔥': { energy: 0.9, valence: 0.8, danceability: 0.9 },
-//   '🎉': { energy: 0.9, valence: 0.9, danceability: 0.9 },
-//   '💃': { energy: 0.9, valence: 0.8, danceability: 0.9 },
-//   '🕺': { energy: 0.9, valence: 0.8, danceability: 0.9 },
-//   '⚡': { energy: 1.0, valence: 0.7, danceability: 0.8 },
-  
-//   // Sad/Melancholic
-//   '😢': { energy: 0.2, valence: 0.2, danceability: 0.2 },
-//   '😭': { energy: 0.3, valence: 0.1, danceability: 0.1 },
-//   '😔': { energy: 0.2, valence: 0.3, danceability: 0.2 },
-//   '💔': { energy: 0.3, valence: 0.1, danceability: 0.2 },
-//   '😞': { energy: 0.2, valence: 0.2, danceability: 0.2 },
-  
-//   // Calm/Relaxed
-//   '😌': { energy: 0.3, valence: 0.7, danceability: 0.3 },
-//   '🧘': { energy: 0.1, valence: 0.6, danceability: 0.1 },
-//   '😴': { energy: 0.1, valence: 0.5, danceability: 0.1 },
-//   '🌙': { energy: 0.2, valence: 0.6, danceability: 0.2 },
-//   '☁️': { energy: 0.2, valence: 0.5, danceability: 0.2 },
-  
-//   // Angry/Intense
-//   '😠': { energy: 0.8, valence: 0.2, danceability: 0.6 },
-//   '😡': { energy: 0.9, valence: 0.1, danceability: 0.7 },
-//   '🤬': { energy: 0.9, valence: 0.1, danceability: 0.7 },
-  
-//   // Workout/Motivation
-//   '💪': { energy: 0.8, valence: 0.7, danceability: 0.6 },
-//   '🏃': { energy: 0.9, valence: 0.6, danceability: 0.5 },
-//   '🥇': { energy: 0.7, valence: 0.8, danceability: 0.6 },
-  
-//   // Love/Romance
-//   '❤️': { energy: 0.5, valence: 0.8, danceability: 0.4 },
-//   '💕': { energy: 0.4, valence: 0.8, danceability: 0.3 },
-//   '💖': { energy: 0.6, valence: 0.9, danceability: 0.5 },
-// };
-
-// // Text sentiment keywords
-// const textMoodKeywords = {
-//   happy: { energy: 0.7, valence: 0.8, danceability: 0.6, keywords: ['happy', 'joy', 'excited', 'cheerful', 'upbeat'] },
-//   sad: { energy: 0.2, valence: 0.2, danceability: 0.2, keywords: ['sad', 'depressed', 'down', 'blue', 'melancholy'] },
-//   energetic: { energy: 0.9, valence: 0.7, danceability: 0.8, keywords: ['energetic', 'pumped', 'hyped', 'intense', 'powerful'] },
-//   calm: { energy: 0.2, valence: 0.6, danceability: 0.2, keywords: ['calm', 'relaxed', 'peaceful', 'chill', 'serene'] },
-//   angry: { energy: 0.8, valence: 0.2, danceability: 0.6, keywords: ['angry', 'mad', 'furious', 'rage', 'frustrated'] },
-//   romantic: { energy: 0.4, valence: 0.8, danceability: 0.3, keywords: ['love', 'romantic', 'tender', 'affectionate', 'intimate'] },
-//   motivated: { energy: 0.8, valence: 0.7, danceability: 0.5, keywords: ['motivated', 'determined', 'focused', 'driven', 'ambitious'] },
-//   nostalgic: { energy: 0.4, valence: 0.5, danceability: 0.3, keywords: ['nostalgic', 'memories', 'past', 'reminisce', 'throwback'] }
-// };
-
-// function analyzeMood(emojis) {
-//   if (!emojis || emojis.length === 0) {
-//     // Default neutral mood
-//     return {
-//       energy: 0.5,
-//       valence: 0.5,
-//       danceability: 0.5,
-//       mood: 'neutral'
-//     };
-//   }
-  
-//   let totalEnergy = 0;
-//   let totalValence = 0;
-//   let totalDanceability = 0;
-//   let count = 0;
-  
-//   emojis.forEach(emoji => {
-//     if (emojiMoodMap[emoji]) {
-//       totalEnergy += emojiMoodMap[emoji].energy;
-//       totalValence += emojiMoodMap[emoji].valence;
-//       totalDanceability += emojiMoodMap[emoji].danceability;
-//       count++;
-//     }
-//   });
-  
-//   if (count === 0) {
-//     return {
-//       energy: 0.5,
-//       valence: 0.5,
-//       danceability: 0.5,
-//       mood: 'neutral'
-//     };
-//   }
-  
-//   const energy = totalEnergy / count;
-//   const valence = totalValence / count;
-//   const danceability = totalDanceability / count;
-  
-//   // Determine primary mood
-//   const mood = determinePrimaryMood(energy, valence, danceability);
-  
-//   return {
-//     energy,
-//     valence,
-//     danceability,
-//     mood,
-//     // Additional Spotify audio features
-//     acousticness: valence < 0.4 ? 0.7 : 0.3,
-//     instrumentalness: 0.1,
-//     liveness: energy > 0.7 ? 0.3 : 0.1,
-//     speechiness: 0.1,
-//     tempo: Math.round(60 + (energy * 120)), // 60-180 BPM range
-//     loudness: -20 + (energy * 15), // -20 to -5 dB range
-//     mode: valence > 0.5 ? 1 : 0, // Major/Minor
-//     key: Math.floor(Math.random() * 12), // Random key
-//     time_signature: 4
-//   };
-// }
-
-// function analyzeTextMood(text) {
-//   const lowercaseText = text.toLowerCase();
-//   let bestMatch = null;
-//   let maxMatches = 0;
-  
-//   // Find the mood category with the most keyword matches
-//   Object.entries(textMoodKeywords).forEach(([moodName, moodData]) => {
-//     const matches = moodData.keywords.filter(keyword => 
-//       lowercaseText.includes(keyword)
-//     ).length;
-    
-//     if (matches > maxMatches) {
-//       maxMatches = matches;
-//       bestMatch = { name: moodName, ...moodData };
-//     }
-//   });
-  
-//   // If no keywords match, use basic sentiment analysis
-//   if (!bestMatch) {
-//     bestMatch = basicSentimentAnalysis(lowercaseText);
-//   }
-  
-//   return {
-//     energy: bestMatch.energy,
-//     valence: bestMatch.valence,
-//     danceability: bestMatch.danceability,
-//     mood: bestMatch.name || bestMatch.mood,
-//     // Additional Spotify audio features
-//     acousticness: bestMatch.valence < 0.4 ? 0.7 : 0.3,
-//     instrumentalness: 0.1,
-//     liveness: bestMatch.energy > 0.7 ? 0.3 : 0.1,
-//     speechiness: 0.1,
-//     tempo: Math.round(60 + (bestMatch.energy * 120)),
-//     loudness: -20 + (bestMatch.energy * 15),
-//     mode: bestMatch.valence > 0.5 ? 1 : 0,
-//     key: Math.floor(Math.random() * 12),
-//     time_signature: 4
-//   };
-// }
-
-// function basicSentimentAnalysis(text) {
-//   const positiveWords = ['good', 'great', 'awesome', 'amazing', 'wonderful', 'fantastic', 'excellent'];
-//   const negativeWords = ['bad', 'terrible', 'awful', 'horrible', 'sad', 'depressing', 'boring'];
-//   const energeticWords = ['fast', 'quick', 'rapid', 'intense', 'loud', 'strong'];
-//   const calmWords = ['slow', 'quiet', 'soft', 'gentle', 'peaceful', 'smooth'];
-  
-//   let positiveScore = 0;
-//   let negativeScore = 0;
-//   let energeticScore = 0;
-//   let calmScore = 0;
-  
-//   positiveWords.forEach(word => {
-//     if (text.includes(word)) positiveScore++;
-//   });
-  
-//   negativeWords.forEach(word => {
-//     if (text.includes(word)) negativeScore++;
-//   });
-  
-//   energeticWords.forEach(word => {
-//     if (text.includes(word)) energeticScore++;
-//   });
-  
-//   calmWords.forEach(word => {
-//     if (text.includes(word)) calmScore++;
-//   });
-  
-//   // Calculate mood based on scores
-//   const valence = Math.max(0, Math.min(1, 0.5 + (positiveScore - negativeScore) * 0.2));
-//   const energy = Math.max(0, Math.min(1, 0.5 + (energeticScore - calmScore) * 0.2));
-  
-//   return {
-//     energy,
-//     valence,
-//     danceability: energy * 0.8,
-//     mood: 'analyzed'
-//   };
-// }
-
-// function determinePrimaryMood(energy, valence, danceability) {
-//   if (energy > 0.7 && valence > 0.7) return 'happy';
-//   if (energy > 0.8 && danceability > 0.7) return 'energetic';
-//   if (valence < 0.3) return 'sad';
-//   if (energy < 0.3 && valence > 0.5) return 'calm';
-//   if (energy > 0.7 && valence < 0.4) return 'angry';
-//   if (valence > 0.7 && energy < 0.6) return 'romantic';
-//   return 'neutral';
-// }
-
-// module.exports = {
-//   analyzeMood,
-//   analyzeTextMood,
-//   emojiMoodMap,
-//   textMoodKeywords
-// };
-
 // Comprehensive emoji to mood mapping
 const emojiMoodMap = {
   // Happy/Joyful
@@ -226,9 +11,9 @@ const emojiMoodMap = {
   
   // Energetic/Party
   '🔥': { energy: 0.9, valence: 0.8, danceability: 0.9, mood: 'energetic' },
-  '🎉': { energy: 0.9, valence: 0.9, danceability: 0.9, mood: 'energetic' },
-  '💃': { energy: 0.9, valence: 0.8, danceability: 0.9, mood: 'energetic' },
-  '🕺': { energy: 0.9, valence: 0.8, danceability: 0.9, mood: 'energetic' },
+  '🎉': { energy: 0.9, valence: 0.9, danceability: 0.9, mood: 'party' },
+  '💃': { energy: 0.9, valence: 0.8, danceability: 0.9, mood: 'party' },
+  '🕺': { energy: 0.9, valence: 0.8, danceability: 0.9, mood: 'party' },
   '⚡': { energy: 1.0, valence: 0.7, danceability: 0.8, mood: 'energetic' },
   '🚀': { energy: 0.9, valence: 0.8, danceability: 0.7, mood: 'energetic' },
   
@@ -236,28 +21,28 @@ const emojiMoodMap = {
   '😢': { energy: 0.2, valence: 0.2, danceability: 0.2, mood: 'sad' },
   '😭': { energy: 0.3, valence: 0.1, danceability: 0.1, mood: 'sad' },
   '😔': { energy: 0.2, valence: 0.3, danceability: 0.2, mood: 'sad' },
-  '💔': { energy: 0.3, valence: 0.1, danceability: 0.2, mood: 'sad' },
+  '💔': { energy: 0.3, valence: 0.1, danceability: 0.2, mood: 'lonely' },
   '😞': { energy: 0.2, valence: 0.2, danceability: 0.2, mood: 'sad' },
-  '🌧️': { energy: 0.3, valence: 0.4, danceability: 0.2, mood: 'sad' },
+  '🌧️': { energy: 0.3, valence: 0.4, danceability: 0.2, mood: 'melancholic' },
   
   // Calm/Relaxed
   '😌': { energy: 0.3, valence: 0.7, danceability: 0.3, mood: 'calm' },
-  '🧘': { energy: 0.1, valence: 0.6, danceability: 0.1, mood: 'calm' },
-  '😴': { energy: 0.1, valence: 0.5, danceability: 0.1, mood: 'calm' },
-  '🌙': { energy: 0.2, valence: 0.6, danceability: 0.2, mood: 'calm' },
-  '☁️': { energy: 0.2, valence: 0.5, danceability: 0.2, mood: 'calm' },
+  '🧘': { energy: 0.1, valence: 0.6, danceability: 0.1, mood: 'meditative' },
+  '😴': { energy: 0.1, valence: 0.5, danceability: 0.1, mood: 'sleepy' },
+  '🌙': { energy: 0.2, valence: 0.6, danceability: 0.2, mood: 'sleepy' },
+  '☁️': { energy: 0.2, valence: 0.5, danceability: 0.2, mood: 'dreamy' },
   '🌊': { energy: 0.3, valence: 0.6, danceability: 0.3, mood: 'calm' },
   
   // Angry/Intense
   '😠': { energy: 0.8, valence: 0.2, danceability: 0.6, mood: 'angry' },
   '😡': { energy: 0.9, valence: 0.1, danceability: 0.7, mood: 'angry' },
-  '🤬': { energy: 0.9, valence: 0.1, danceability: 0.7, mood: 'angry' },
-  '👿': { energy: 0.8, valence: 0.2, danceability: 0.6, mood: 'angry' },
+  '🤬': { energy: 0.9, valence: 0.1, danceability: 0.7, mood: 'rebellious' },
+  '👿': { energy: 0.8, valence: 0.2, danceability: 0.6, mood: 'dark' },
   
   // Workout/Motivation
-  '💪': { energy: 0.8, valence: 0.7, danceability: 0.6, mood: 'energetic' },
-  '🏃': { energy: 0.9, valence: 0.6, danceability: 0.5, mood: 'energetic' },
-  '🥇': { energy: 0.7, valence: 0.8, danceability: 0.6, mood: 'happy' },
+  '💪': { energy: 0.8, valence: 0.7, danceability: 0.6, mood: 'workout' },
+  '🏃': { energy: 0.9, valence: 0.6, danceability: 0.5, mood: 'workout' },
+  '🥇': { energy: 0.7, valence: 0.8, danceability: 0.6, mood: 'confident' },
   '🎯': { energy: 0.7, valence: 0.7, danceability: 0.5, mood: 'focused' },
   
   // Love/Romance
@@ -271,79 +56,135 @@ const emojiMoodMap = {
   '🤔': { energy: 0.4, valence: 0.5, danceability: 0.3, mood: 'contemplative' },
   '😎': { energy: 0.6, valence: 0.7, danceability: 0.6, mood: 'cool' },
   '🤗': { energy: 0.5, valence: 0.8, danceability: 0.4, mood: 'happy' },
-  '😋': { energy: 0.6, valence: 0.8, danceability: 0.5, mood: 'happy' },
+  '😋': { energy: 0.6, valence: 0.8, danceability: 0.5, mood: 'playful' },
   '🤩': { energy: 0.8, valence: 0.9, danceability: 0.7, mood: 'excited' },
-  '🥳': { energy: 0.9, valence: 0.9, danceability: 0.9, mood: 'party' }
+  '🥳': { energy: 0.9, valence: 0.9, danceability: 0.9, mood: 'party' },
+  '😰': { energy: 0.6, valence: 0.3, danceability: 0.4, mood: 'anxious' },
+  '🌈': { energy: 0.6, valence: 0.8, danceability: 0.5, mood: 'hopeful' },
+  '🌴': { energy: 0.5, valence: 0.7, danceability: 0.6, mood: 'tropical' },
+  '🚗': { energy: 0.6, valence: 0.7, danceability: 0.5, mood: 'road-trip' },
+  '📚': { energy: 0.3, valence: 0.6, danceability: 0.2, mood: 'studying' },
+  '🍳': { energy: 0.4, valence: 0.7, danceability: 0.4, mood: 'cooking' },
+  '🎸': { energy: 0.7, valence: 0.6, danceability: 0.6, mood: 'groovy' },
+  '🎭': { energy: 0.5, valence: 0.5, danceability: 0.4, mood: 'vintage' }
 };
 
 // Text sentiment keywords with mood mappings
 const textMoodKeywords = {
-  // Happy keywords
-  happy: { 
+  // Original moods
+  happy: {
     energy: 0.7, valence: 0.8, danceability: 0.6, mood: 'happy',
     keywords: ['happy', 'joy', 'joyful', 'excited', 'cheerful', 'upbeat', 'elated', 'thrilled']
   },
-  
-  // Sad keywords
-  sad: { 
+  sad: {
     energy: 0.2, valence: 0.2, danceability: 0.2, mood: 'sad',
     keywords: ['sad', 'depressed', 'down', 'blue', 'melancholy', 'gloomy', 'dejected', 'heartbroken']
   },
-  
-  // Energetic keywords
-  energetic: { 
+  energetic: {
     energy: 0.9, valence: 0.7, danceability: 0.8, mood: 'energetic',
-    keywords: ['energetic', 'pumped', 'hyped', 'intense', 'powerful', 'dynamic', 'vigorous', 'workout']
+    keywords: ['energetic', 'pumped', 'hyped', 'intense', 'powerful', 'dynamic', 'vigorous']
   },
-  
-  // Calm keywords
-  calm: { 
+  calm: {
     energy: 0.2, valence: 0.6, danceability: 0.2, mood: 'calm',
     keywords: ['calm', 'relaxed', 'peaceful', 'chill', 'serene', 'tranquil', 'mellow', 'zen']
   },
-  
-  // Angry keywords
-  angry: { 
+  angry: {
     energy: 0.8, valence: 0.2, danceability: 0.6, mood: 'angry',
     keywords: ['angry', 'mad', 'furious', 'rage', 'frustrated', 'irritated', 'livid', 'pissed']
   },
-  
-  // Romantic keywords
-  romantic: { 
+  romantic: {
     energy: 0.4, valence: 0.8, danceability: 0.3, mood: 'romantic',
     keywords: ['love', 'romantic', 'tender', 'affectionate', 'intimate', 'passion', 'romance', 'crush']
   },
-  
-  // Motivated keywords
-  motivated: { 
+  motivated: {
     energy: 0.8, valence: 0.7, danceability: 0.5, mood: 'motivated',
     keywords: ['motivated', 'determined', 'focused', 'driven', 'ambitious', 'goal', 'achieve', 'success']
   },
-  
-  // Nostalgic keywords
-  nostalgic: { 
+  nostalgic: {
     energy: 0.4, valence: 0.5, danceability: 0.3, mood: 'nostalgic',
     keywords: ['nostalgic', 'memories', 'past', 'reminisce', 'throwback', 'remember', 'childhood', 'miss']
   },
-  
-  // Party keywords
-  party: { 
+  party: {
     energy: 0.9, valence: 0.8, danceability: 0.9, mood: 'party',
-    keywords: ['party', 'dance', 'club', 'rave', 'celebration', 'festive', 'wild', 'crazy']
+    keywords: ['party', 'dance', 'club', 'rave', 'celebration', 'festive', 'wild', 'crazy', 'lit']
+  },
+  focused: {
+    energy: 0.5, valence: 0.6, danceability: 0.3, mood: 'focused',
+    keywords: ['focus', 'concentrate', 'work', 'productivity', 'efficient', 'organized']
   },
   
-  // Study/Focus keywords
-  focus: { 
-    energy: 0.5, valence: 0.6, danceability: 0.3, mood: 'focus',
-    keywords: ['study', 'focus', 'concentrate', 'work', 'productivity', 'learning', 'exam', 'homework']
+  // New moods
+  sleepy: {
+    energy: 0.1, valence: 0.5, danceability: 0.1, mood: 'sleepy',
+    keywords: ['sleepy', 'tired', 'drowsy', 'exhausted', 'yawn', 'bedtime', 'nap']
+  },
+  dreamy: {
+    energy: 0.3, valence: 0.7, danceability: 0.3, mood: 'dreamy',
+    keywords: ['dreamy', 'floaty', 'ethereal', 'spacey', 'surreal', 'whimsical']
+  },
+  meditative: {
+    energy: 0.1, valence: 0.6, danceability: 0.1, mood: 'meditative',
+    keywords: ['meditate', 'meditation', 'mindful', 'spiritual', 'prayer', 'contemplation']
+  },
+  confident: {
+    energy: 0.7, valence: 0.8, danceability: 0.6, mood: 'confident',
+    keywords: ['confident', 'bold', 'fearless', 'strong', 'powerful', 'unstoppable', 'boss']
+  },
+  playful: {
+    energy: 0.7, valence: 0.8, danceability: 0.7, mood: 'playful',
+    keywords: ['playful', 'fun', 'silly', 'goofy', 'childish', 'lighthearted', 'whimsical']
+  },
+  groovy: {
+    energy: 0.7, valence: 0.8, danceability: 0.8, mood: 'groovy',
+    keywords: ['groovy', 'funky', 'smooth', 'cool', 'jazzy', 'soulful']
+  },
+  lonely: {
+    energy: 0.2, valence: 0.3, danceability: 0.2, mood: 'lonely',
+    keywords: ['lonely', 'alone', 'isolated', 'solitary', 'abandoned', 'empty']
+  },
+  hopeful: {
+    energy: 0.5, valence: 0.7, danceability: 0.4, mood: 'hopeful',
+    keywords: ['hopeful', 'optimistic', 'positive', 'bright', 'promising', 'faith']
+  },
+  anxious: {
+    energy: 0.6, valence: 0.3, danceability: 0.4, mood: 'anxious',
+    keywords: ['anxious', 'nervous', 'worried', 'stressed', 'tense', 'uneasy', 'restless']
+  },
+  workout: {
+    energy: 0.9, valence: 0.7, danceability: 0.7, mood: 'workout',
+    keywords: ['workout', 'exercise', 'gym', 'training', 'fitness', 'sweat', 'pump']
+  },
+  'road-trip': {
+    energy: 0.6, valence: 0.7, danceability: 0.5, mood: 'road-trip',
+    keywords: ['road', 'trip', 'drive', 'journey', 'travel', 'adventure', 'highway']
+  },
+  cooking: {
+    energy: 0.4, valence: 0.7, danceability: 0.4, mood: 'cooking',
+    keywords: ['cooking', 'kitchen', 'baking', 'chef', 'recipe', 'food', 'dinner']
+  },
+  studying: {
+    energy: 0.3, valence: 0.6, danceability: 0.2, mood: 'studying',
+    keywords: ['study', 'studying', 'homework', 'exam', 'learning', 'reading', 'library']
+  },
+  rebellious: {
+    energy: 0.8, valence: 0.4, danceability: 0.7, mood: 'rebellious',
+    keywords: ['rebel', 'rebellious', 'punk', 'anarchy', 'revolution', 'defiant']
+  },
+  vintage: {
+    energy: 0.5, valence: 0.6, danceability: 0.5, mood: 'vintage',
+    keywords: ['vintage', 'retro', 'classic', 'old-school', 'throwback', 'nostalgia']
+  },
+  tropical: {
+    energy: 0.6, valence: 0.8, danceability: 0.7, mood: 'tropical',
+    keywords: ['tropical', 'beach', 'summer', 'vacation', 'island', 'paradise', 'sun']
+  },
+  dark: {
+    energy: 0.5, valence: 0.2, danceability: 0.4, mood: 'dark',
+    keywords: ['dark', 'gothic', 'gloomy', 'mysterious', 'shadow', 'night', 'haunting']
   }
 };
 
-/**
- * Analyze mood from text input
- * @param {string} text - The text to analyze
- * @returns {Object} Mood data with energy, valence, danceability, etc.
- */
+// Rest of your existing functions remain the same...
 function analyzeTextMood(text) {
   if (!text || typeof text !== 'string') {
     return getNeutralMood();
@@ -355,7 +196,7 @@ function analyzeTextMood(text) {
   
   // Find the mood category with the most keyword matches
   Object.entries(textMoodKeywords).forEach(([moodName, moodData]) => {
-    const matches = moodData.keywords.filter(keyword => 
+    const matches = moodData.keywords.filter(keyword =>
       lowercaseText.includes(keyword)
     ).length;
     
@@ -373,11 +214,6 @@ function analyzeTextMood(text) {
   return buildMoodResponse(bestMatch);
 }
 
-/**
- * Analyze mood from emoji array
- * @param {Array} emojis - Array of emoji strings
- * @returns {Object} Mood data with energy, valence, danceability, etc.
- */
 function analyzeEmojiMood(emojis) {
   if (!emojis || !Array.isArray(emojis) || emojis.length === 0) {
     return getNeutralMood();
@@ -408,7 +244,7 @@ function analyzeEmojiMood(emojis) {
   }
   
   // Find the most common mood
-  dominantMood = Object.keys(moodCounts).reduce((a, b) => 
+  dominantMood = Object.keys(moodCounts).reduce((a, b) =>
     moodCounts[a] > moodCounts[b] ? a : b
   );
   
@@ -424,11 +260,6 @@ function analyzeEmojiMood(emojis) {
   });
 }
 
-/**
- * Basic sentiment analysis for text without keyword matches
- * @param {string} text - Lowercase text to analyze
- * @returns {Object} Basic mood data
- */
 function basicSentimentAnalysis(text) {
   const positiveWords = ['good', 'great', 'awesome', 'amazing', 'wonderful', 'fantastic', 'excellent', 'brilliant'];
   const negativeWords = ['bad', 'terrible', 'awful', 'horrible', 'boring', 'worst', 'hate', 'sucks'];
@@ -475,10 +306,6 @@ function basicSentimentAnalysis(text) {
   };
 }
 
-/**
- * Get neutral mood data
- * @returns {Object} Neutral mood configuration
- */
 function getNeutralMood() {
   return buildMoodResponse({
     energy: 0.5,
@@ -488,11 +315,6 @@ function getNeutralMood() {
   });
 }
 
-/**
- * Build complete mood response with all Spotify audio features
- * @param {Object} moodData - Basic mood data
- * @returns {Object} Complete mood response
- */
 function buildMoodResponse(moodData) {
   const { energy, valence, danceability, mood } = moodData;
   
@@ -515,18 +337,10 @@ function buildMoodResponse(moodData) {
   };
 }
 
-/**
- * Get all available emoji moods for reference
- * @returns {Object} All emoji mood mappings
- */
 function getEmojiMoodMap() {
   return emojiMoodMap;
 }
 
-/**
- * Get all text mood keywords for reference
- * @returns {Object} All text mood keyword mappings
- */
 function getTextMoodKeywords() {
   return textMoodKeywords;
 }
