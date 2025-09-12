@@ -133,15 +133,23 @@ function App() {
   const generatePlaylist = async (moodData, inputText) => {
     setLoading(true);
     setError(null);
-    
-    // Set a timeout to prevent infinite loading
+  
     const timeout = setTimeout(() => {
       setLoading(false);
       setError('Request timed out. Please try again.');
-    }, 30000); // 30 second timeout
+    }, 30000);
     
     try {
-      // Convert mood data to Spotify audio features format
+      // Get the current token from state
+      const currentToken = accessToken;
+      
+      if (!currentToken) {
+        clearTimeout(timeout);
+        setError('No authentication token. Please login again.');
+        setLoading(false);
+        return;
+      }
+      
       const requestData = {
         energy: moodData.energy,
         valence: moodData.valence,
@@ -151,11 +159,19 @@ function App() {
         limit: 20
       };
 
-      console.log('Sending request data:', requestData);
+      console.log('Sending request with token:', currentToken ? 'Yes' : 'No');
+      console.log('Token first 20 chars:', currentToken?.substring(0, 20));
+      console.log('Request data:', requestData);
 
-      const recs = await getRecommendations(accessToken, requestData, moodData.mood);
+      const recs = await getRecommendations(currentToken, requestData, moodData.mood);
       
       clearTimeout(timeout);
+      
+      if (!recs || !recs.tracks || recs.tracks.length === 0) {
+        setError('No tracks found for this mood. Please try a different mood.');
+        setLoading(false);
+        return;
+      }
       
       const playlist = {
         name: `Moodify - ${moodData.mood} vibes`,
@@ -170,38 +186,50 @@ function App() {
       clearTimeout(timeout);
       console.error('Failed to generate playlist:', error);
       
-      // If it's a 401 error, try refreshing the token
       if (error.response?.status === 401) {
+        console.log('Token expired, attempting refresh...');
         const refreshed = await refreshTokenFunc();
         if (refreshed) {
-          // Retry with new token
-          try {
-            const requestData = {
-              energy: moodData.energy,
-              valence: moodData.valence,
-              danceability: moodData.danceability,
-              acousticness: moodData.acousticness,
-              mood: moodData.mood,
-              limit: 20
-            };
-            
-            const recs = await getRecommendations(accessToken, requestData, moodData.mood);
-            
-            const playlist = {
-              name: `Moodify - ${moodData.mood} vibes`,
-              description: `Generated from: "${inputText}" • Energy: ${Math.round(moodData.energy * 100)}% • Positivity: ${Math.round(moodData.valence * 100)}%`,
-              tracks: recs.tracks,
-              mood: moodData.mood,
-              audioFeatures: moodData
-            };
-            
-            setCurrentPlaylist(playlist);
-          } catch (retryError) {
-            setError('Failed to generate playlist. Please try again.');
-          }
+          // Retry with new token - but we need to wait for state update
+          setTimeout(async () => {
+            try {
+              const newToken = accessToken; // This should now be the updated token
+              const requestData = {
+                energy: moodData.energy,
+                valence: moodData.valence,
+                danceability: moodData.danceability,
+                acousticness: moodData.acousticness,
+                mood: moodData.mood,
+                limit: 20
+              };
+              
+              const recs = await getRecommendations(newToken, requestData, moodData.mood);
+              
+              if (!recs || !recs.tracks || recs.tracks.length === 0) {
+                setError('No tracks found for this mood. Please try a different mood.');
+                return;
+              }
+              
+              const playlist = {
+                name: `Moodify - ${moodData.mood} vibes`,
+                description: `Generated from: "${inputText}" • Energy: ${Math.round(moodData.energy * 100)}% • Positivity: ${Math.round(moodData.valence * 100)}%`,
+                tracks: recs.tracks,
+                mood: moodData.mood,
+                audioFeatures: moodData
+              };
+              
+              setCurrentPlaylist(playlist);
+            } catch (retryError) {
+              console.error('Retry failed:', retryError);
+              setError('Failed to generate playlist. Please try logging in again.');
+            }
+          }, 100); // Small delay to ensure state update
+        } else {
+          setError('Session expired. Please login again.');
+          handleLogout();
         }
       } else {
-        setError('Failed to generate playlist. Please try again.');
+        setError(error.response?.data?.error || 'Failed to generate playlist. Please try again.');
       }
     } finally {
       setLoading(false);
