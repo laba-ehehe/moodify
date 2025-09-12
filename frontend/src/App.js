@@ -79,7 +79,7 @@ function App() {
       const playlist = {
         name: `Moodify - ${moodData.mood} vibes`,
         description: `Generated from: "${inputText}" • Energy: ${Math.round(moodData.energy * 100)}% • Positivity: ${Math.round(moodData.valence * 100)}%`,
-        tracks: recommendations.tracks,
+        tracks: recs.tracks,
         mood: moodData.mood,
         audioFeatures: moodData
       };
