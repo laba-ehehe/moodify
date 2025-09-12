@@ -29,18 +29,23 @@ router.get('/me', authenticateSpotify, async (req, res) => {
   }
 });
 
-// Simple genre mapping without dynamic API calls
+// Updated genre mapping with ONLY verified Spotify seed genres
 const MOOD_TO_GENRES = {
-  happy: ['pop', 'party', 'dance', 'indie-pop', 'happy'],
-  energetic: ['edm', 'dance', 'work-out', 'house', 'electronic'],
-  calm: ['chill', 'ambient', 'acoustic', 'new-age', 'classical'],
-  sad: ['sad', 'piano', 'acoustic', 'singer-songwriter', 'blues'],
-  romantic: ['romance', 'r-n-b', 'soul', 'latin', 'pop'],
-  focus: ['ambient', 'classical', 'chill', 'study', 'acoustic'],
-  angry: ['metal', 'hard-rock', 'rock', 'punk', 'alt-rock'],
-  party: ['party', 'dance', 'club', 'edm', 'pop'],
+  happy: ['pop', 'dance', 'funk', 'disco', 'happy'],
+  energetic: ['dance', 'electronic', 'house', 'techno', 'edm'],
+  calm: ['chill', 'ambient', 'acoustic', 'classical', 'jazz'],
+  sad: ['acoustic', 'piano', 'singer-songwriter', 'blues', 'sad'],
+  romantic: ['r-n-b', 'soul', 'latin', 'pop', 'jazz'],
+  focus: ['ambient', 'classical', 'chill', 'acoustic', 'instrumental'],
+  angry: ['metal', 'hard-rock', 'rock', 'punk', 'alternative'],
+  party: ['dance', 'club', 'edm', 'pop', 'electronic'],
   nostalgic: ['rock', 'blues', 'folk', 'country', 'oldies'],
-  neutral: ['pop', 'indie', 'alternative', 'electronic', 'rock']
+  neutral: ['pop', 'indie', 'alternative', 'electronic', 'rock'],
+  // Additional moods from your analyzer
+  motivated: ['rock', 'pop', 'electronic', 'alternative', 'indie'],
+  contemplative: ['ambient', 'classical', 'acoustic', 'chill', 'folk'],
+  cool: ['jazz', 'funk', 'electronic', 'indie', 'alternative'],
+  excited: ['dance', 'pop', 'electronic', 'funk', 'disco']
 };
 
 // Generate recommendations based on mood
@@ -53,43 +58,61 @@ router.post('/recommendations', authenticateSpotify, async (req, res) => {
   }
 
   try {
-    // Use simple genre mapping instead of API call
+    // Get genres for the mood (fallback to neutral if mood not found)
     const genres = MOOD_TO_GENRES[mood] || MOOD_TO_GENRES.neutral;
     const seed_genres = genres.slice(0, 5).join(',');
 
-    // Filter only valid Spotify parameters
-    const allowedParams = {};
-    const validKeys = ['target_energy', 'target_valence', 'target_danceability', 
-                      'target_acousticness', 'target_mode'];
-    
-    validKeys.forEach(key => {
-      if (features[key] !== undefined) {
-        allowedParams[key] = String(features[key]);
-      }
-    });
-
+    // Build base parameters
     const params = new URLSearchParams({
-      limit: String(limit),
+      limit: String(Math.min(limit, 100)), // Spotify max is 100
       market: 'US',
-      seed_genres,
-      ...allowedParams
+      seed_genres
     });
 
-    const response = await axios.get(
-      `https://api.spotify.com/v1/recommendations?${params}`, 
-      {
-        headers: { 
-          'Authorization': `Bearer ${req.spotifyToken}` 
-        }
+    // Add audio features with proper bounds checking
+    if (features.energy !== undefined && features.energy >= 0 && features.energy <= 1) {
+      params.append('target_energy', String(Number(features.energy).toFixed(2)));
+    }
+    if (features.valence !== undefined && features.valence >= 0 && features.valence <= 1) {
+      params.append('target_valence', String(Number(features.valence).toFixed(2)));
+    }
+    if (features.danceability !== undefined && features.danceability >= 0 && features.danceability <= 1) {
+      params.append('target_danceability', String(Number(features.danceability).toFixed(2)));
+    }
+    if (features.acousticness !== undefined && features.acousticness >= 0 && features.acousticness <= 1) {
+      params.append('target_acousticness', String(Number(features.acousticness).toFixed(2)));
+    }
+
+    const requestUrl = `https://api.spotify.com/v1/recommendations?${params.toString()}`;
+    console.log('Spotify API request URL:', requestUrl);
+    console.log('Request headers:', {
+      'Authorization': `Bearer ${req.spotifyToken.substring(0, 20)}...`
+    });
+
+    const response = await axios.get(requestUrl, {
+      headers: {
+        'Authorization': `Bearer ${req.spotifyToken}`
       }
-    );
+    });
+
+    console.log('Spotify API response status:', response.status);
+    console.log('Number of tracks returned:', response.data.tracks?.length || 0);
 
     res.json(response.data);
   } catch (error) {
-    console.error('Recommendations error:', error.response?.data || error.message);
-    res.status(error.response?.status || 500).json({ 
+    console.error('Recommendations error details:');
+    console.error('Status:', error.response?.status);
+    console.error('Data:', error.response?.data);
+    console.error('Message:', error.message);
+    
+    if (error.response?.status === 404) {
+      console.error('404 Error - This usually means invalid seed genres or malformed request');
+    }
+    
+    res.status(error.response?.status || 500).json({
       error: 'Failed to get recommendations',
-      details: error.response?.data 
+      details: error.response?.data,
+      status: error.response?.status
     });
   }
 });
@@ -133,24 +156,5 @@ router.post('/create-playlist', authenticateSpotify, async (req, res) => {
     });
   }
 });
-
-// Get track audio features
-// router.get('/audio-features/:trackId', authenticateSpotify, async (req, res) => {
-//   const { trackId } = req.params;
-  
-//   try {
-//     const response = await axios.get(`https://api.spotify.com/v1/audio-features/${trackId}`, {
-//       headers: {
-//         'Authorization': `Bearer ${req.spotifyToken}`,
-//       },
-//     });
-//     res.json(response.data);
-//   } catch (error) {
-//     console.error('Audio features error:', error.response?.data || error.message);
-//     res.status(error.response?.status || 500).json({ 
-//       error: 'Failed to get audio features' 
-//     });
-//   }
-// });
 
 module.exports = router;
