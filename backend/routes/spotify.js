@@ -90,7 +90,6 @@ const MOOD_SEED_TRACKS = {
   party: ['2aoo2jlRnM3A0NyLQqMN2f', '32OlwWuMpZ6b0aN2RZOeMS'],
   nostalgic: ['5fpizYGbi5IQoEraj6FP0R', '3hBBKuWJfxlIlnd9QFoC8k'],
   neutral: ['0VjIjW4GlUZAMYd2vXMi3b', '7qiZfU4dY1lWllzX7mPBI3'],
-  // Add default tracks for new moods
   sleepy: ['4i9sYtSIlR80bxje5B3rUb', '5mCPDVBb16L4XQwDdbRUpz'],
   workout: ['2aoo2jlRnM3A0NyLQqMN2f', '75ZvA4QfFiZvzhj2xkaWAh']
 };

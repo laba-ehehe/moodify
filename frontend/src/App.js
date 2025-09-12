@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import Homepage from './components/Homepage';
 import PlaylistDisplay from './components/PlaylistDisplay';
 import LoadingSpinner from './components/LoadingSpinner';
-import { getUserProfile, getRecommendations, createPlaylist } from './services/api';
+import { getUserProfile, getRecommendations, createPlaylist, refreshAccessToken } from './services/api';
 import './App.css';
 
 function App() {
@@ -12,9 +12,44 @@ function App() {
   const [currentPlaylist, setCurrentPlaylist] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [tokenExpiryTime, setTokenExpiryTime] = useState(null);
 
+  // Function to refresh the access token
+  const refreshTokenFunc = useCallback(async () => {
+    if (!refreshToken) {
+      console.log('No refresh token available');
+      return false;
+    }
+    
+    try {
+      console.log('Refreshing access token...');
+      const response = await refreshAccessToken(refreshToken);
+      
+      if (response.access_token) {
+        setAccessToken(response.access_token);
+        // Spotify tokens expire in 1 hour, set expiry time
+        setTokenExpiryTime(Date.now() + 55 * 60 * 1000); // 55 minutes from now
+        
+        if (response.refresh_token) {
+          setRefreshToken(response.refresh_token);
+        }
+        
+        console.log('Token refreshed successfully');
+        return true;
+      }
+    } catch (error) {
+      console.error('Failed to refresh token:', error);
+      setError('Session expired. Please login again.');
+      // Clear tokens and redirect to login
+      setAccessToken(null);
+      setRefreshToken(null);
+      setTokenExpiryTime(null);
+      return false;
+    }
+  }, [refreshToken]);
+
+  // Check for tokens in URL on initial load
   useEffect(() => {
-    // Check for tokens in URL (from Spotify redirect)
     const urlParams = new URLSearchParams(window.location.search);
     const token = urlParams.get('access_token');
     const refresh = urlParams.get('refresh_token');
@@ -27,12 +62,36 @@ function App() {
 
     if (token) {
       setAccessToken(token);
-      if (refresh) setRefreshToken(refresh);
+      // Set token expiry time (55 minutes from now)
+      setTokenExpiryTime(Date.now() + 55 * 60 * 1000);
+      
+      if (refresh) {
+        setRefreshToken(refresh);
+      }
       // Clean URL
       window.history.replaceState({}, document.title, '/');
     }
   }, []);
 
+  // Set up automatic token refresh
+  useEffect(() => {
+    if (!accessToken || !tokenExpiryTime) return;
+
+    // Check if token needs refresh every minute
+    const checkTokenExpiry = setInterval(() => {
+      const timeUntilExpiry = tokenExpiryTime - Date.now();
+      
+      // Refresh if less than 5 minutes until expiry
+      if (timeUntilExpiry < 5 * 60 * 1000) {
+        console.log('Token expiring soon, refreshing...');
+        refreshTokenFunc();
+      }
+    }, 60 * 1000); // Check every minute
+
+    return () => clearInterval(checkTokenExpiry);
+  }, [accessToken, tokenExpiryTime, refreshTokenFunc]);
+
+  // Fetch user profile when access token changes
   useEffect(() => {
     if (accessToken) {
       fetchUserProfile();
@@ -45,7 +104,22 @@ function App() {
       setUser(profile);
     } catch (error) {
       console.error('Failed to fetch user profile:', error);
-      setError('Failed to load user profile');
+      
+      // If it's a 401 error, try refreshing the token
+      if (error.response?.status === 401) {
+        const refreshed = await refreshTokenFunc();
+        if (refreshed) {
+          // Retry fetching profile with new token
+          try {
+            const profile = await getUserProfile(accessToken);
+            setUser(profile);
+          } catch (retryError) {
+            setError('Failed to load user profile');
+          }
+        }
+      } else {
+        setError('Failed to load user profile');
+      }
     }
   };
 
@@ -53,13 +127,18 @@ function App() {
     const API_BASE_URL = process.env.NODE_ENV === 'production'
       ? 'https://moodify-1aa2.onrender.com'
       : 'http://localhost:5000';
-  
     window.location.href = `${API_BASE_URL}/auth/login`;
   };
 
   const generatePlaylist = async (moodData, inputText) => {
     setLoading(true);
     setError(null);
+    
+    // Set a timeout to prevent infinite loading
+    const timeout = setTimeout(() => {
+      setLoading(false);
+      setError('Request timed out. Please try again.');
+    }, 30000); // 30 second timeout
     
     try {
       // Convert mood data to Spotify audio features format
@@ -69,15 +148,14 @@ function App() {
         danceability: moodData.danceability,
         acousticness: moodData.acousticness,
         mood: moodData.mood,
-        // target_tempo: moodData.tempo,
-        // target_loudness: moodData.loudness,
-        // target_mode: moodData.mode,
         limit: 20
       };
 
       console.log('Sending request data:', requestData);
 
       const recs = await getRecommendations(accessToken, requestData, moodData.mood);
+      
+      clearTimeout(timeout);
       
       const playlist = {
         name: `Moodify - ${moodData.mood} vibes`,
@@ -89,8 +167,42 @@ function App() {
       
       setCurrentPlaylist(playlist);
     } catch (error) {
+      clearTimeout(timeout);
       console.error('Failed to generate playlist:', error);
-      setError('Failed to generate playlist. Please try again.');
+      
+      // If it's a 401 error, try refreshing the token
+      if (error.response?.status === 401) {
+        const refreshed = await refreshTokenFunc();
+        if (refreshed) {
+          // Retry with new token
+          try {
+            const requestData = {
+              energy: moodData.energy,
+              valence: moodData.valence,
+              danceability: moodData.danceability,
+              acousticness: moodData.acousticness,
+              mood: moodData.mood,
+              limit: 20
+            };
+            
+            const recs = await getRecommendations(accessToken, requestData, moodData.mood);
+            
+            const playlist = {
+              name: `Moodify - ${moodData.mood} vibes`,
+              description: `Generated from: "${inputText}" • Energy: ${Math.round(moodData.energy * 100)}% • Positivity: ${Math.round(moodData.valence * 100)}%`,
+              tracks: recs.tracks,
+              mood: moodData.mood,
+              audioFeatures: moodData
+            };
+            
+            setCurrentPlaylist(playlist);
+          } catch (retryError) {
+            setError('Failed to generate playlist. Please try again.');
+          }
+        }
+      } else {
+        setError('Failed to generate playlist. Please try again.');
+      }
     } finally {
       setLoading(false);
     }
@@ -115,7 +227,31 @@ function App() {
       return savedPlaylist;
     } catch (error) {
       console.error('Failed to save playlist:', error);
-      setError('Failed to save playlist to Spotify');
+      
+      // If it's a 401 error, try refreshing the token
+      if (error.response?.status === 401) {
+        const refreshed = await refreshTokenFunc();
+        if (refreshed) {
+          // Retry with new token
+          try {
+            const trackUris = playlistData.tracks.map(track => track.uri);
+            
+            const savedPlaylist = await createPlaylist(accessToken, {
+              name: playlistData.name,
+              description: playlistData.description,
+              trackUris,
+              userId: user.id
+            });
+            
+            alert('Playlist saved to your Spotify library!');
+            return savedPlaylist;
+          } catch (retryError) {
+            setError('Failed to save playlist to Spotify');
+          }
+        }
+      } else {
+        setError('Failed to save playlist to Spotify');
+      }
     } finally {
       setLoading(false);
     }
@@ -123,6 +259,15 @@ function App() {
 
   const resetApp = () => {
     setCurrentPlaylist(null);
+    setError(null);
+  };
+
+  const handleLogout = () => {
+    setAccessToken(null);
+    setRefreshToken(null);
+    setUser(null);
+    setCurrentPlaylist(null);
+    setTokenExpiryTime(null);
     setError(null);
   };
 
@@ -149,7 +294,12 @@ function App() {
     <div className="app">
       <header className="app-header">
         <h1>🎵 Moodify</h1>
-        {user && <span className="user-greeting">Hey, {user.display_name}!</span>}
+        <div className="header-right">
+          {user && <span className="user-greeting">Hey, {user.display_name}!</span>}
+          <button onClick={handleLogout} className="logout-button">
+            Logout
+          </button>
+        </div>
       </header>
       
       {error && (
@@ -161,7 +311,7 @@ function App() {
       
       <main className="app-main">
         {currentPlaylist ? (
-          <PlaylistDisplay 
+          <PlaylistDisplay
             playlist={currentPlaylist}
             onSave={savePlaylistToSpotify}
             onBack={resetApp}
