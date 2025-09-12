@@ -74,7 +74,7 @@ function App() {
         limit: 20
       };
 
-      const recommendations = await getRecommendations(accessToken, audioFeatures);
+      const recs = await getRecommendations(accessToken, audioFeatures, moodData.mood);
       
       const playlist = {
         name: `Moodify - ${moodData.mood} vibes`,

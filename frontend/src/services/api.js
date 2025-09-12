@@ -31,12 +31,12 @@ export const analyzeMoodFromEmojis = async (emojis) => {
 };
 
 // Spotify recommendations
-export const getRecommendations = async (accessToken, audioFeatures) => {
-  const response = await api.post('/api/spotify/recommendations', audioFeatures, {
-    headers: {
-      Authorization: `Bearer ${accessToken}`,
-    },
-  });
+export const getRecommendations = async (accessToken, audioFeatures, mood) => {
+  const response = await api.post(
+    '/api/spotify/recommendations',
+    { ...audioFeatures, mood },
+    { headers: { Authorization: `Bearer ${accessToken}` } }
+  );
   return response.data;
 };
 

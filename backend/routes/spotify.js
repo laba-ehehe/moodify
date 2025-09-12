@@ -31,27 +31,46 @@ router.get('/me', authenticateSpotify, async (req, res) => {
 
 // Generate recommendations based on mood
 router.post('/recommendations', authenticateSpotify, async (req, res) => {
-  const { audioFeatures, limit = 20 } = req.body;
-  
+  // Accept either { audioFeatures, limit, mood } OR a flat body with the features directly
+  const { audioFeatures, limit = 20, mood = 'neutral' } = req.body;
+  const features = audioFeatures || req.body; // ← supports current frontend shape
+
+  // Basic validation
+  if (!features || Object.keys(features).length === 0) {
+    return res.status(400).json({ error: 'No audio feature targets provided' });
+  }
+
+  // Map mood → up to 5 Spotify genre seeds (Spotify requires seeds)
+  const moodToGenres = {
+    happy:     ['pop', 'party', 'summer', 'dance', 'indie-pop'],
+    energetic: ['edm', 'dance', 'work-out', 'house', 'electro'],
+    calm:      ['chill', 'ambient', 'lounge', 'new-age', 'acoustic'],
+    sad:       ['sad', 'piano', 'acoustic', 'rainy-day', 'singer-songwriter'],
+    romantic:  ['romance', 'r-n-b', 'soul', 'latin', 'love'],
+    focus:     ['lo-fi', 'study', 'ambient', 'classical', 'beats'],
+    angry:     ['metal', 'hard-rock', 'rock', 'punk', 'alt-rock'],
+    party:     ['party', 'dance', 'club', 'edm', 'pop'],
+    nostalgic: ['rock-n-roll', 'blues', 'soft-rock', 'folk', 'throwback'],
+    neutral:   ['pop', 'indie', 'alternative', 'electronic', 'rock'],
+  };
+  const seed_genres = (moodToGenres[mood] || moodToGenres.neutral).slice(0, 5).join(',');
+
   try {
     const params = new URLSearchParams({
-      limit: limit.toString(),
+      limit: String(limit),
       market: 'US',
-      ...audioFeatures
+      seed_genres,              // ← add required seeds
+      ...features,              // ← now spreads either body shape
     });
-    
-    const response = await axios.get(`https://api.spotify.com/v1/recommendations?${params}`, {
-      headers: {
-        'Authorization': `Bearer ${req.spotifyToken}`,
-      },
-    });
-    
+
+    const response = await axios.get(
+      `https://api.spotify.com/v1/recommendations?${params.toString()}`,
+      { headers: { 'Authorization': `Bearer ${req.spotifyToken}` } }
+    );
     res.json(response.data);
   } catch (error) {
     console.error('Recommendations error:', error.response?.data || error.message);
-    res.status(error.response?.status || 500).json({ 
-      error: 'Failed to get recommendations' 
-    });
+    res.status(error.response?.status || 500).json({ error: 'Failed to get recommendations' });
   }
 });
 
