@@ -99,93 +99,131 @@ router.post('/recommendations', authenticateSpotify, async (req, res) => {
   const { audioFeatures, limit = 20, mood = 'neutral' } = req.body;
   const features = audioFeatures || req.body;
 
+  console.log('Token received:', req.spotifyToken ? 'Yes' : 'No');
+  console.log('Token first 20 chars:', req.spotifyToken?.substring(0, 20));
+
   if (!features || Object.keys(features).length === 0) {
     return res.status(400).json({ error: 'No audio features provided' });
   }
 
-  // Function to try getting recommendations
-  const tryGetRecommendations = async (params, strategy) => {
+  try {
+    // First, let's verify the token works by getting user profile
     try {
-      const requestUrl = `https://api.spotify.com/v1/recommendations?${params.toString()}`;
-      console.log(`Strategy: ${strategy}`);
-      console.log('Request URL:', requestUrl);
-      
-      const response = await axios.get(requestUrl, {
+      const profileTest = await axios.get('https://api.spotify.com/v1/me', {
         headers: {
-          'Authorization': `Bearer ${req.spotifyToken}`
+          'Authorization': `Bearer ${req.spotifyToken}`,
+          'Content-Type': 'application/json'
         }
       });
-
-      return response;
-    } catch (error) {
-      console.log(`${strategy} failed:`, error.response?.status);
-      return null;
+      console.log('Token is valid, user:', profileTest.data.display_name);
+    } catch (tokenError) {
+      console.error('Token validation failed:', tokenError.response?.status);
+      return res.status(401).json({ error: 'Invalid or expired token' });
     }
-  };
+
+    let response = null;
+
+    // Search for tracks based on mood
+    console.log('Searching for tracks based on mood:', mood);
+    
+    const moodSearchTerms = {
+      happy: 'happy upbeat cheerful',
+      sad: 'sad melancholy emotional',
+      energetic: 'energetic workout pump',
+      calm: 'calm relaxing peaceful',
+      angry: 'angry aggressive intense',
+      romantic: 'love romantic tender',
+      party: 'party dance club',
+      nostalgic: 'classic oldies throwback',
+      focused: 'focus concentration study',
+      sleepy: 'sleep relax calm',
+      workout: 'workout gym pump',
+      neutral: 'pop hits popular'
+    };
+    
+    const searchQuery = moodSearchTerms[mood] || moodSearchTerms.neutral;
+    const searchUrl = `https://api.spotify.com/v1/search?q=${encodeURIComponent(searchQuery)}&type=track&limit=50&market=US`;
+    
+    console.log('Search URL:', searchUrl);
+    
+    const searchResponse = await axios.get(searchUrl, {
+      headers: {
+        'Authorization': `Bearer ${req.spotifyToken}`,
+        'Content-Type': 'application/json'
+      }
+    });
+
+    if (searchResponse.data.tracks && searchResponse.data.tracks.items.length > 0) {
+      // Just return the search results directly
+      console.log('Returning search results as recommendations');
+      return res.json({
+        tracks: searchResponse.data.tracks.items.slice(0, limit),
+        seeds: []
+      });
+    }
+
+    // Last resort: search for generic popular music
+    const fallbackSearch = await axios.get(
+      `https://api.spotify.com/v1/search?q=year:2020-2024&type=track&limit=${limit}&market=US`,
+      {
+        headers: {
+          'Authorization': `Bearer ${req.spotifyToken}`,
+          'Content-Type': 'application/json'
+        }
+      }
+    );
+    
+    if (fallbackSearch.data.tracks && fallbackSearch.data.tracks.items.length > 0) {
+      return res.json({
+        tracks: fallbackSearch.data.tracks.items,
+        seeds: []
+      });
+    }
+
+    throw new Error('Unable to get any tracks from Spotify');
+
+  } catch (error) {
+    console.error('Recommendations error:');
+    console.error('Status:', error.response?.status);
+    console.error('Data:', error.response?.data);
+    console.error('Message:', error.message);
+    
+    res.status(error.response?.status || 500).json({
+      error: error.response?.data?.error?.message || 'Failed to get recommendations',
+      details: error.response?.data,
+      status: error.response?.status
+    });
+  }
+});
 
   try {
     let response = null;
-    let tracks = [];
 
-    // Strategy 1: Try with genre seeds first
-    console.log('Attempting with mood:', mood);
-    const genres = MOOD_TO_GENRES[mood] || MOOD_TO_GENRES.neutral;
+    // Skip genre-based approach since it's unreliable
+    // Go straight to searching for tracks based on mood
     
-    if (genres && genres.length > 0) {
-      const genreParams = new URLSearchParams({
-        limit: String(Math.min(limit, 100)),
-        market: 'US',
-        seed_genres: genres.slice(0, 5).join(',')
-      });
-
-      // Add audio features
-      if (features.energy !== undefined && features.energy >= 0 && features.energy <= 1) {
-        genreParams.append('target_energy', String(Number(features.energy).toFixed(2)));
-      }
-      if (features.valence !== undefined && features.valence >= 0 && features.valence <= 1) {
-        genreParams.append('target_valence', String(Number(features.valence).toFixed(2)));
-      }
-      if (features.danceability !== undefined && features.danceability >= 0 && features.danceability <= 1) {
-        genreParams.append('target_danceability', String(Number(features.danceability).toFixed(2)));
-      }
-
-      response = await tryGetRecommendations(genreParams, 'Genre-based');
-      
-      if (response && response.data.tracks && response.data.tracks.length > 0) {
-        console.log('Success with genres! Got', response.data.tracks.length, 'tracks');
-        return res.json(response.data);
-      }
-    }
-
-    // Strategy 2: Try with seed tracks
-    const seedTracks = MOOD_SEED_TRACKS[mood] || MOOD_SEED_TRACKS.neutral;
+    console.log('Searching for tracks based on mood:', mood);
     
-    if (seedTracks && seedTracks.length > 0) {
-      const trackParams = new URLSearchParams({
-        limit: String(Math.min(limit, 100)),
-        market: 'US',
-        seed_tracks: seedTracks.slice(0, 2).join(',')
-      });
-
-      // Add basic audio features
-      if (features.energy !== undefined) {
-        trackParams.append('target_energy', String(Number(features.energy).toFixed(2)));
-      }
-      if (features.valence !== undefined) {
-        trackParams.append('target_valence', String(Number(features.valence).toFixed(2)));
-      }
-
-      response = await tryGetRecommendations(trackParams, 'Track-based');
-      
-      if (response && response.data.tracks && response.data.tracks.length > 0) {
-        console.log('Success with seed tracks! Got', response.data.tracks.length, 'tracks');
-        return res.json(response.data);
-      }
-    }
-
-    // Strategy 3: Search for tracks and use as seeds
-    const searchQuery = mood === 'neutral' ? 'pop hits' : mood;
-    const searchUrl = `https://api.spotify.com/v1/search?q=${encodeURIComponent(searchQuery)}&type=track&limit=5&market=US`;
+    // Build a search query based on the mood
+    const moodSearchTerms = {
+      happy: 'happy upbeat cheerful',
+      sad: 'sad melancholy emotional',
+      energetic: 'energetic workout pump',
+      calm: 'calm relaxing peaceful',
+      angry: 'angry aggressive intense',
+      romantic: 'love romantic tender',
+      party: 'party dance club',
+      nostalgic: 'classic oldies throwback',
+      focused: 'focus concentration study',
+      sleepy: 'sleep relax calm',
+      workout: 'workout gym pump',
+      neutral: 'pop hits popular'
+    };
+    
+    const searchQuery = moodSearchTerms[mood] || moodSearchTerms.neutral;
+    const searchUrl = `https://api.spotify.com/v1/search?q=${encodeURIComponent(searchQuery)}&type=track&limit=50&market=US`;
+    
+    console.log('Search URL:', searchUrl);
     
     const searchResponse = await axios.get(searchUrl, {
       headers: {
@@ -194,26 +232,72 @@ router.post('/recommendations', authenticateSpotify, async (req, res) => {
     });
 
     if (searchResponse.data.tracks && searchResponse.data.tracks.items.length > 0) {
-      const foundTrackIds = searchResponse.data.tracks.items
-        .slice(0, 2)
-        .map(track => track.id);
+      // Use the first 5 tracks as seeds
+      const seedTracks = searchResponse.data.tracks.items
+        .slice(0, 5)
+        .map(track => track.id)
+        .filter(id => id); // Remove any undefined IDs
       
-      const searchBasedParams = new URLSearchParams({
-        limit: String(Math.min(limit, 100)),
-        market: 'US',
-        seed_tracks: foundTrackIds.join(',')
-      });
+      console.log('Found seed tracks:', seedTracks);
+      
+      if (seedTracks.length > 0) {
+        const recommendParams = new URLSearchParams({
+          limit: String(Math.min(limit, 100)),
+          market: 'US',
+          seed_tracks: seedTracks.slice(0, 5).join(',') // Max 5 seeds
+        });
 
-      response = await tryGetRecommendations(searchBasedParams, 'Search-based');
-      
-      if (response && response.data.tracks && response.data.tracks.length > 0) {
-        console.log('Success with searched tracks! Got', response.data.tracks.length, 'tracks');
-        return res.json(response.data);
+        // Add audio features with less strict parameters
+        if (features.energy !== undefined) {
+          recommendParams.append('target_energy', String(Number(features.energy).toFixed(1)));
+        }
+        if (features.valence !== undefined) {
+          recommendParams.append('target_valence', String(Number(features.valence).toFixed(1)));
+        }
+
+        const recommendUrl = `https://api.spotify.com/v1/recommendations?${recommendParams.toString()}`;
+        console.log('Recommendations URL:', recommendUrl);
+        
+        response = await axios.get(recommendUrl, {
+          headers: {
+            'Authorization': `Bearer ${req.spotifyToken}`
+          }
+        });
+        
+        if (response.data.tracks && response.data.tracks.length > 0) {
+          console.log('Success! Got', response.data.tracks.length, 'recommendations');
+          return res.json(response.data);
+        }
       }
     }
 
-    // If all strategies fail, return an error
-    throw new Error('Unable to get recommendations from Spotify');
+    // If recommendations fail, just return the search results as recommendations
+    if (searchResponse.data.tracks && searchResponse.data.tracks.items.length > 0) {
+      console.log('Falling back to search results');
+      return res.json({
+        tracks: searchResponse.data.tracks.items.slice(0, limit),
+        seeds: []
+      });
+    }
+
+    // Last resort: search for generic popular music
+    const fallbackSearch = await axios.get(
+      `https://api.spotify.com/v1/search?q=year:2020-2024&type=track&limit=${limit}&market=US`,
+      {
+        headers: {
+          'Authorization': `Bearer ${req.spotifyToken}`
+        }
+      }
+    );
+    
+    if (fallbackSearch.data.tracks && fallbackSearch.data.tracks.items.length > 0) {
+      return res.json({
+        tracks: fallbackSearch.data.tracks.items,
+        seeds: []
+      });
+    }
+
+    throw new Error('Unable to get any tracks from Spotify');
 
   } catch (error) {
     console.error('All recommendation strategies failed');
