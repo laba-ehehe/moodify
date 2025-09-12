@@ -12,6 +12,12 @@ function Homepage({ onGeneratePlaylist }) {
     e.preventDefault();
     setLoading(true);
     
+    // Add a timeout to prevent infinite loading
+    const timeout = setTimeout(() => {
+      setLoading(false);
+      alert('Request timed out. Please check your connection and try again.');
+    }, 30000); // 30 second timeout
+    
     try {
       let moodData;
       let inputText;
@@ -24,14 +30,22 @@ function Homepage({ onGeneratePlaylist }) {
         inputText = selectedEmojis.join(' ');
       } else {
         alert('Please enter some text or select emojis');
+        clearTimeout(timeout);
         setLoading(false);
         return;
       }
       
+      console.log('Mood data received:', moodData); // Debug log
+      
       await onGeneratePlaylist(moodData, inputText);
+      clearTimeout(timeout);
     } catch (error) {
+      clearTimeout(timeout);
       console.error('Failed to analyze mood:', error);
-      alert('Failed to analyze mood. Please try again.');
+      
+      // More detailed error message
+      const errorMessage = error.response?.data?.error || error.message || 'Failed to analyze mood';
+      alert(`Error: ${errorMessage}\n\nPlease check the console for more details.`);
     } finally {
       setLoading(false);
     }
@@ -46,13 +60,13 @@ function Homepage({ onGeneratePlaylist }) {
       
       <div className="mood-input-section">
         <div className="input-mode-toggle">
-          <button 
+          <button
             className={inputMode === 'text' ? 'active' : ''}
             onClick={() => setInputMode('text')}
           >
             ✏️ Text
           </button>
-          <button 
+          <button
             className={inputMode === 'emoji' ? 'active' : ''}
             onClick={() => setInputMode('emoji')}
           >
@@ -72,14 +86,14 @@ function Homepage({ onGeneratePlaylist }) {
               />
             </div>
           ) : (
-            <EmojiPicker 
+            <EmojiPicker
               selectedEmojis={selectedEmojis}
               onEmojiSelect={setSelectedEmojis}
             />
           )}
           
-          <button 
-            type="submit" 
+          <button
+            type="submit"
             className="generate-button"
             disabled={loading || (inputMode === 'text' ? !textInput.trim() : selectedEmojis.length === 0)}
           >
