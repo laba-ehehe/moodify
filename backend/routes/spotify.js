@@ -30,42 +30,100 @@ router.get('/me', authenticateSpotify, async (req, res) => {
 });
 
 // Generate recommendations based on mood
-router.post('/recommendations', authenticateSpotify, async (req, res) => {
-  // Accept either { audioFeatures, limit, mood } OR a flat body with the features directly
-  const { audioFeatures, limit = 20, mood = 'neutral' } = req.body;
-  const features = audioFeatures || req.body; // ← supports current frontend shape
+// router.post('/recommendations', authenticateSpotify, async (req, res) => {
+//   // Accept either { audioFeatures, limit, mood } OR a flat body with the features directly
+//   const { audioFeatures, limit = 20, mood = 'neutral' } = req.body;
+//   const features = audioFeatures || req.body; // ← supports current frontend shape
 
-  // Basic validation
+//   // Basic validation
+//   if (!features || Object.keys(features).length === 0) {
+//     return res.status(400).json({ error: 'No audio feature targets provided' });
+//   }
+
+//   // Map mood → up to 5 Spotify genre seeds (Spotify requires seeds)
+//   const moodToGenres = {
+//     happy:     ['pop', 'party', 'summer', 'dance', 'indie-pop'],
+//     energetic: ['edm', 'dance', 'work-out', 'house', 'electro'],
+//     calm:      ['chill', 'ambient', 'lounge', 'new-age', 'acoustic'],
+//     sad:       ['sad', 'piano', 'acoustic', 'rainy-day', 'singer-songwriter'],
+//     romantic:  ['romance', 'r-n-b', 'soul', 'latin', 'love'],
+//     focus:     ['lo-fi', 'study', 'ambient', 'classical', 'beats'],
+//     angry:     ['metal', 'hard-rock', 'rock', 'punk', 'alt-rock'],
+//     party:     ['party', 'dance', 'club', 'edm', 'pop'],
+//     nostalgic: ['rock-n-roll', 'blues', 'soft-rock', 'folk', 'throwback'],
+//     neutral:   ['pop', 'indie', 'alternative', 'electronic', 'rock'],
+//   };
+//   const seed_genres = (moodToGenres[mood] || moodToGenres.neutral).slice(0, 5).join(',');
+
+//   try {
+//     const params = new URLSearchParams({
+//       limit: String(limit),
+//       market: 'US',
+//       seed_genres,              // ← add required seeds
+//       ...features,              // ← now spreads either body shape
+//     });
+
+//     const response = await axios.get(
+//       `https://api.spotify.com/v1/recommendations?${params.toString()}`,
+//       { headers: { 'Authorization': `Bearer ${req.spotifyToken}` } }
+//     );
+//     res.json(response.data);
+//   } catch (error) {
+//     console.error('Recommendations error:', error.response?.data || error.message);
+//     res.status(error.response?.status || 500).json({ error: 'Failed to get recommendations' });
+//   }
+// });
+// Generate recommendations based on mood
+router.post('/recommendations', authenticateSpotify, async (req, res) => {
+  // Accept either { audioFeatures, limit, mood } OR a flat body
+  const { audioFeatures, limit = 20, mood = 'neutral' } = req.body;
+  const features = audioFeatures || req.body;
+
   if (!features || Object.keys(features).length === 0) {
     return res.status(400).json({ error: 'No audio feature targets provided' });
   }
 
-  // Map mood → up to 5 Spotify genre seeds (Spotify requires seeds)
+  // Spotify's valid seed genres (subset: only what we use here)
+  const VALID = new Set([
+    'pop','indie','indie-pop','alternative','electronic','electro','edm','dance','house',
+    'party','club','summer','happy','work-out',
+    'romance','r-n-b','soul','latin',
+    'chill','ambient','new-age','acoustic','sleep','study','classical',
+    'sad','piano','rainy-day','singer-songwriter',
+    'metal','hard-rock','rock','punk','alt-rock','rock-n-roll',
+    'blues','folk'
+  ]);
+
+  // Mood → candidate genres (ONLY from the VALID list)
   const moodToGenres = {
-    happy:     ['pop', 'party', 'summer', 'dance', 'indie-pop'],
-    energetic: ['edm', 'dance', 'work-out', 'house', 'electro'],
-    calm:      ['chill', 'ambient', 'lounge', 'new-age', 'acoustic'],
-    sad:       ['sad', 'piano', 'acoustic', 'rainy-day', 'singer-songwriter'],
-    romantic:  ['romance', 'r-n-b', 'soul', 'latin', 'love'],
-    focus:     ['lo-fi', 'study', 'ambient', 'classical', 'beats'],
-    angry:     ['metal', 'hard-rock', 'rock', 'punk', 'alt-rock'],
-    party:     ['party', 'dance', 'club', 'edm', 'pop'],
-    nostalgic: ['rock-n-roll', 'blues', 'soft-rock', 'folk', 'throwback'],
-    neutral:   ['pop', 'indie', 'alternative', 'electronic', 'rock'],
+    happy:     ['happy','pop','party','summer','indie-pop'],
+    energetic: ['edm','dance','work-out','house','electro'],
+    calm:      ['chill','ambient','new-age','acoustic','sleep'],
+    sad:       ['sad','piano','acoustic','rainy-day','singer-songwriter'],
+    romantic:  ['romance','r-n-b','soul','latin','pop'],       // removed "love"
+    focus:     ['study','ambient','classical','sleep','chill'],// removed "lo-fi","beats"
+    angry:     ['metal','hard-rock','rock','punk','alt-rock'],
+    party:     ['party','dance','club','edm','pop'],
+    nostalgic: ['rock-n-roll','blues','folk','rock','country'],// removed "soft-rock","throwback"
+    neutral:   ['pop','indie','alternative','electronic','rock'],
   };
-  const seed_genres = (moodToGenres[mood] || moodToGenres.neutral).slice(0, 5).join(',');
+
+  // Filter to valid seeds and ensure we always have at least one
+  let seeds = (moodToGenres[mood] || moodToGenres.neutral).filter(g => VALID.has(g));
+  if (seeds.length === 0) seeds = moodToGenres.neutral;
+  const seed_genres = seeds.slice(0, 5).join(',');
 
   try {
     const params = new URLSearchParams({
       limit: String(limit),
       market: 'US',
-      seed_genres,              // ← add required seeds
-      ...features,              // ← now spreads either body shape
+      seed_genres,
+      ...features, // target_* fields
     });
 
     const response = await axios.get(
       `https://api.spotify.com/v1/recommendations?${params.toString()}`,
-      { headers: { 'Authorization': `Bearer ${req.spotifyToken}` } }
+      { headers: { Authorization: `Bearer ${req.spotifyToken}` } }
     );
     res.json(response.data);
   } catch (error) {

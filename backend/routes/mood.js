@@ -1,5 +1,5 @@
 const express = require('express');
-const { analyzeMood, analyzeTextMood } = require('../utils/moodAnalyzer');
+const { analyzeEmojiMood, analyzeTextMood } = require('../utils/moodAnalyzer');
 const router = express.Router();
 
 // Analyze emoji mood
@@ -11,7 +11,7 @@ router.post('/analyze-emoji', (req, res) => {
       return res.status(400).json({ error: 'Emojis array required' });
     }
     
-    const moodData = analyzeMood(emojis);
+    const moodData = analyzeEmojiMood(emojis)
     res.json(moodData);
   } catch (error) {
     console.error('Emoji analysis error:', error.message);
