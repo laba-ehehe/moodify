@@ -50,7 +50,7 @@ function App() {
   };
 
   const handleLogin = () => {
-    const API_BASE_URL = process.env.NODE_ENV === 'production' 
+    const API_BASE_URL = process.env.NODE_ENV === 'production'
       ? 'https://moodify-1aa2.onrender.com'
       : 'http://localhost:5000';
   
@@ -63,18 +63,21 @@ function App() {
     
     try {
       // Convert mood data to Spotify audio features format
-      const audioFeatures = {
-        target_energy: moodData.energy,
-        target_valence: moodData.valence,
-        target_danceability: moodData.danceability,
-        target_acousticness: moodData.acousticness,
+      const requestData = {
+        energy: moodData.energy,
+        valence: moodData.valence,
+        danceability: moodData.danceability,
+        acousticness: moodData.acousticness,
+        mood: moodData.mood,
         // target_tempo: moodData.tempo,
         // target_loudness: moodData.loudness,
-        target_mode: moodData.mode,
+        // target_mode: moodData.mode,
         limit: 20
       };
 
-      const recs = await getRecommendations(accessToken, audioFeatures, moodData.mood);
+      console.log('Sending request data:', requestData);
+
+      const recs = await getRecommendations(accessToken, requestData, moodData.mood);
       
       const playlist = {
         name: `Moodify - ${moodData.mood} vibes`,

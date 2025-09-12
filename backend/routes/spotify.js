@@ -135,22 +135,22 @@ router.post('/create-playlist', authenticateSpotify, async (req, res) => {
 });
 
 // Get track audio features
-router.get('/audio-features/:trackId', authenticateSpotify, async (req, res) => {
-  const { trackId } = req.params;
+// router.get('/audio-features/:trackId', authenticateSpotify, async (req, res) => {
+//   const { trackId } = req.params;
   
-  try {
-    const response = await axios.get(`https://api.spotify.com/v1/audio-features/${trackId}`, {
-      headers: {
-        'Authorization': `Bearer ${req.spotifyToken}`,
-      },
-    });
-    res.json(response.data);
-  } catch (error) {
-    console.error('Audio features error:', error.response?.data || error.message);
-    res.status(error.response?.status || 500).json({ 
-      error: 'Failed to get audio features' 
-    });
-  }
-});
+//   try {
+//     const response = await axios.get(`https://api.spotify.com/v1/audio-features/${trackId}`, {
+//       headers: {
+//         'Authorization': `Bearer ${req.spotifyToken}`,
+//       },
+//     });
+//     res.json(response.data);
+//   } catch (error) {
+//     console.error('Audio features error:', error.response?.data || error.message);
+//     res.status(error.response?.status || 500).json({ 
+//       error: 'Failed to get audio features' 
+//     });
+//   }
+// });
 
 module.exports = router;
