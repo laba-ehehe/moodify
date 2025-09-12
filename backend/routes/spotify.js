@@ -35,7 +35,6 @@ router.post('/recommendations', authenticateSpotify, async (req, res) => {
   const features = audioFeatures || req.body;
 
   console.log('Token received:', req.spotifyToken ? 'Yes' : 'No');
-  console.log('Token first 20 chars:', req.spotifyToken?.substring(0, 20));
   console.log('Mood requested:', mood);
 
   if (!features || Object.keys(features).length === 0) {
@@ -43,7 +42,7 @@ router.post('/recommendations', authenticateSpotify, async (req, res) => {
   }
 
   try {
-    // First, let's verify the token works by getting user profile
+    // Verify token
     try {
       const profileTest = await axios.get('https://api.spotify.com/v1/me', {
         headers: {
@@ -60,40 +59,38 @@ router.post('/recommendations', authenticateSpotify, async (req, res) => {
     // Search for tracks based on mood
     console.log('Searching for tracks based on mood:', mood);
     
-    // Extended mood search terms for better results
     const moodSearchTerms = {
-      happy: 'happy upbeat cheerful joy positive',
-      sad: 'sad melancholy emotional ballad slow',
-      energetic: 'energetic workout pump high energy dance',
-      calm: 'calm relaxing peaceful ambient chill',
-      angry: 'angry aggressive intense metal rock',
-      romantic: 'love romantic tender sweet couple',
-      party: 'party dance club rave friday night',
-      nostalgic: 'classic oldies throwback 90s 80s',
-      focused: 'focus concentration study instrumental',
-      sleepy: 'sleep relax calm night peaceful',
-      workout: 'workout gym pump motivation training',
-      neutral: 'pop hits top 40 popular trending',
-      // Add new moods
-      confident: 'confident powerful strong boss empowerment',
-      dreamy: 'dreamy ethereal atmospheric ambient',
-      groovy: 'groovy funky disco soul rhythm',
-      lonely: 'lonely solitude alone melancholy',
-      hopeful: 'hopeful optimistic uplifting inspiring',
-      anxious: 'anxious nervous tense worried',
-      meditative: 'meditation zen mindful spiritual',
-      playful: 'playful fun silly happy kids',
-      motivated: 'motivated inspiration success achievement',
-      contemplative: 'contemplative thoughtful reflection',
-      cool: 'cool jazz smooth sophisticated',
-      excited: 'excited thrilled energetic hype',
-      'road-trip': 'road trip driving highway travel',
-      cooking: 'cooking kitchen jazz bossa nova',
-      studying: 'study focus concentration lofi',
-      rebellious: 'rebellious punk rock alternative',
-      vintage: 'vintage retro classic oldies',
-      tropical: 'tropical summer beach reggaeton latin',
-      dark: 'dark gothic industrial metal'
+      happy: 'happy upbeat cheerful',
+      sad: 'sad melancholy emotional',
+      energetic: 'energetic workout pump',
+      calm: 'calm relaxing peaceful',
+      angry: 'angry aggressive intense',
+      romantic: 'love romantic tender',
+      party: 'party dance club',
+      nostalgic: 'classic oldies throwback',
+      focused: 'focus concentration study',
+      sleepy: 'sleep relax calm',
+      workout: 'workout gym pump',
+      neutral: 'pop hits popular',
+      confident: 'confident powerful strong',
+      dreamy: 'dreamy ethereal atmospheric',
+      groovy: 'groovy funky disco',
+      lonely: 'lonely solitude alone',
+      hopeful: 'hopeful optimistic uplifting',
+      anxious: 'anxious nervous tense',
+      meditative: 'meditation zen mindful',
+      playful: 'playful fun silly',
+      motivated: 'motivated inspiration success',
+      contemplative: 'contemplative thoughtful',
+      cool: 'cool jazz smooth',
+      excited: 'excited thrilled energetic',
+      'road-trip': 'road trip driving',
+      cooking: 'cooking kitchen jazz',
+      studying: 'study focus concentration',
+      rebellious: 'rebellious punk rock',
+      vintage: 'vintage retro classic',
+      tropical: 'tropical summer beach',
+      dark: 'dark gothic industrial'
     };
     
     const searchQuery = moodSearchTerms[mood] || moodSearchTerms.neutral;
@@ -109,10 +106,7 @@ router.post('/recommendations', authenticateSpotify, async (req, res) => {
     });
 
     if (searchResponse.data.tracks && searchResponse.data.tracks.items.length > 0) {
-      // Filter tracks to match mood better based on audio features if available
       let tracks = searchResponse.data.tracks.items;
-      
-      // Sort tracks by popularity to get better quality results
       tracks.sort((a, b) => b.popularity - a.popularity);
       
       console.log(`Found ${tracks.length} tracks, returning top ${limit}`);
@@ -123,8 +117,8 @@ router.post('/recommendations', authenticateSpotify, async (req, res) => {
       });
     }
 
-    // Fallback: search for popular music from recent years
-    console.log('No tracks found for mood, trying fallback search');
+    // Fallback search
+    console.log('No tracks found, trying fallback');
     const fallbackSearch = await axios.get(
       `https://api.spotify.com/v1/search?q=year:2020-2024&type=track&limit=${limit}&market=US`,
       {
@@ -145,15 +139,10 @@ router.post('/recommendations', authenticateSpotify, async (req, res) => {
     throw new Error('Unable to get any tracks from Spotify');
 
   } catch (error) {
-    console.error('Recommendations error:');
-    console.error('Status:', error.response?.status);
-    console.error('Data:', error.response?.data);
-    console.error('Message:', error.message);
-    
+    console.error('Recommendations error:', error.message);
     res.status(error.response?.status || 500).json({
       error: error.response?.data?.error?.message || 'Failed to get recommendations',
-      details: error.response?.data,
-      status: error.response?.status
+      details: error.response?.data
     });
   }
 });
