@@ -3,6 +3,7 @@ import Homepage from './components/Homepage';
 import PlaylistDisplay from './components/PlaylistDisplay';
 import LoadingSpinner from './components/LoadingSpinner';
 import { getUserProfile, getRecommendations, createPlaylist, refreshAccessToken } from './services/api';
+import 'bootstrap/dist/css/bootstrap.min.css';
 import './App.css';
 
 function App() {
@@ -329,48 +330,79 @@ function App() {
 
   if (!accessToken) {
     return (
-      <div className="app">
-        <div className="login-container">
-          <h1>🎵 Moodify</h1>
-          <p>Generate playlists that match your mood</p>
-          {error && <div className="error-message">{error}</div>}
-          <button onClick={handleLogin} className="login-button">
-            Connect with Spotify
-          </button>
+      <div className="app-container spotify-dark">
+        <div className="container-fluid min-vh-100 d-flex align-items-center justify-content-center">
+          <div className="text-center login-box">
+            <div className="mb-4">
+              <span className="logo-emoji">🎵</span>
+            </div>
+            <h1 className="display-4 mb-3 text-white fw-bold">Moodify</h1>
+            <p className="lead mb-4 text-white-50">Generate playlists that match your mood ✨</p>
+            {error && (
+              <div className="alert alert-danger mb-4" role="alert">
+                {error}
+              </div>
+            )}
+            <button onClick={handleLogin} className="btn btn-spotify btn-lg px-5 py-3">
+              <i className="fab fa-spotify me-2"></i>
+              Connect with Spotify
+            </button>
+          </div>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="app">
-      <header className="app-header">
-        <h1>🎵 Moodify</h1>
-        <div className="header-right">
-          {user && <span className="user-greeting">Hey, {user.display_name}!</span>}
-          <button onClick={handleLogout} className="logout-button">
-            Logout
-          </button>
+    <div className="app-container spotify-dark">
+      {/* Header */}
+      <nav className="navbar navbar-dark spotify-navbar sticky-top">
+        <div className="container-fluid">
+          <a className="navbar-brand d-flex align-items-center" href="#">
+            <span className="logo-emoji me-2">🎵</span>
+            <span className="fw-bold">Moodify</span>
+          </a>
+          <div className="d-flex align-items-center">
+            {user && (
+              <span className="text-white-50 me-3 d-none d-sm-inline">
+                Hey, {user.display_name}! ✨
+              </span>
+            )}
+            <button onClick={handleLogout} className="btn btn-outline-light btn-sm">
+              Logout
+            </button>
+          </div>
         </div>
-      </header>
+      </nav>
       
+      {/* Error Alert */}
       {error && (
-        <div className="error-message">
-          {error}
-          <button onClick={() => setError(null)} className="close-error">×</button>
+        <div className="container-fluid">
+          <div className="alert alert-danger alert-dismissible fade show m-3" role="alert">
+            {error}
+            <button 
+              type="button" 
+              className="btn-close" 
+              onClick={() => setError(null)}
+              aria-label="Close"
+            ></button>
+          </div>
         </div>
       )}
       
-      <main className="app-main">
-        {currentPlaylist ? (
-          <PlaylistDisplay
-            playlist={currentPlaylist}
-            onSave={savePlaylistToSpotify}
-            onBack={resetApp}
-          />
-        ) : (
-          <Homepage onGeneratePlaylist={generatePlaylist} />
-        )}
+      {/* Main Content */}
+      <main className="main-content">
+        <div className="container-fluid p-3 p-md-4">
+          {currentPlaylist ? (
+            <PlaylistDisplay
+              playlist={currentPlaylist}
+              onSave={savePlaylistToSpotify}
+              onBack={resetApp}
+            />
+          ) : (
+            <Homepage onGeneratePlaylist={generatePlaylist} />
+          )}
+        </div>
       </main>
     </div>
   );

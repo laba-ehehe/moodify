@@ -52,138 +52,260 @@ function Homepage({ onGeneratePlaylist }) {
   };
 
   return (
-    <div className="homepage">
-      <div className="hero-section">
-        <h2>How are you feeling?</h2>
-        <p>Describe your mood and we'll create the perfect playlist for you</p>
-      </div>
-      
-      <div className="mood-input-section">
-        <div className="input-mode-toggle">
-          <button
-            type="button"
-            className={inputMode === 'text' ? 'active' : ''}
-            onClick={() => setInputMode('text')}
-          >
-            ✏️ Text
-          </button>
-          <button
-            type="button"
-            className={inputMode === 'emoji' ? 'active' : ''}
-            onClick={() => setInputMode('emoji')}
-          >
-            😊 Emojis
-          </button>
-        </div>
-        
-        <form onSubmit={handleSubmit} className="mood-form">
-          {inputMode === 'text' ? (
-            <div className="text-input-section">
-              <textarea
-                value={textInput}
-                onChange={(e) => setTextInput(e.target.value)}
-                placeholder="e.g., 'feeling energetic and ready to conquer the world' or 'calm but motivated'"
-                className="mood-textarea"
-                rows={3}
-              />
+    <div className="homepage-container">
+      <div className="row justify-content-center">
+        <div className="col-12 col-lg-10 col-xl-8">
+          {/* Hero Section */}
+          <div className="text-center mb-5">
+            <div className="hero-emoji mb-3">✨</div>
+            <h1 className="hero-title">How are you feeling today?</h1>
+            <p className="lead text-muted-spotify">
+              Describe your mood and we'll create the perfect playlist for you
+            </p>
+          </div>
+          
+          {/* Main Card */}
+          <div className="mood-card">
+            {/* Input Mode Toggle */}
+            <div className="text-center mb-4">
+              <div className="toggle-container">
+                <button
+                  type="button"
+                  className={`toggle-btn ${inputMode === 'text' ? 'active' : ''}`}
+                  onClick={() => setInputMode('text')}
+                >
+                  ✏️ Text
+                </button>
+                <button
+                  type="button"
+                  className={`toggle-btn ${inputMode === 'emoji' ? 'active' : ''}`}
+                  onClick={() => setInputMode('emoji')}
+                >
+                  😊 Emojis
+                </button>
+              </div>
             </div>
-          ) : (
-            <EmojiPicker
-              selectedEmojis={selectedEmojis}
-              onEmojiSelect={setSelectedEmojis}
-            />
-          )}
+            
+            {/* Form */}
+            <form onSubmit={handleSubmit}>
+              {inputMode === 'text' ? (
+                <div className="mb-4">
+                  <textarea
+                    value={textInput}
+                    onChange={(e) => setTextInput(e.target.value)}
+                    placeholder="e.g., 'feeling energetic and ready to conquer the world' or 'calm but motivated'"
+                    className="form-control mood-textarea"
+                    rows={4}
+                  />
+                </div>
+              ) : (
+                <div className="mb-4">
+                  <EmojiPicker
+                    selectedEmojis={selectedEmojis}
+                    onEmojiSelect={setSelectedEmojis}
+                  />
+                </div>
+              )}
+              
+              <div className="text-center">
+                <button
+                  type="submit"
+                  className="generate-btn"
+                  disabled={loading || (inputMode === 'text' ? !textInput.trim() : selectedEmojis.length === 0)}
+                >
+                  {loading ? (
+                    <>Creating your playlist...</>
+                  ) : (
+                    <>
+                      <span className="pulse-icon me-2">🎵</span>
+                      Generate Playlist
+                    </>
+                  )}
+                </button>
+              </div>
+            </form>
+          </div>
           
-          <button
-            type="submit"
-            className="generate-button"
-            disabled={loading || (inputMode === 'text' ? !textInput.trim() : selectedEmojis.length === 0)}
-          >
-            {loading ? 'Creating your playlist...' : '🎵 Generate Playlist'}
-          </button>
-        </form>
-      </div>
-      
-      <div className="examples-section">
-        <h3>Try these moods:</h3>
-        
-        {/* All mood examples displayed at once */}
-        <div className="example-buttons">
-          {/* Primary moods */}
-          <button type="button" onClick={() => { setInputMode('text'); setTextInput('happy and cheerful'); }}>
-            😊 Happy
-          </button>
-          <button type="button" onClick={() => { setInputMode('text'); setTextInput('sad and melancholic'); }}>
-            😢 Sad
-          </button>
-          <button type="button" onClick={() => { setInputMode('text'); setTextInput('energetic workout vibes'); }}>
-            💪 Workout
-          </button>
-          <button type="button" onClick={() => { setInputMode('text'); setTextInput('calm and peaceful'); }}>
-            🧘 Calm
-          </button>
-          <button type="button" onClick={() => { setInputMode('text'); setTextInput('romantic dinner atmosphere'); }}>
-            ❤️ Romantic
-          </button>
-          <button type="button" onClick={() => { setInputMode('text'); setTextInput('party time celebration'); }}>
-            🎉 Party
-          </button>
-          <button type="button" onClick={() => { setInputMode('text'); setTextInput('focused study session'); }}>
-            📚 Studying
-          </button>
-          <button type="button" onClick={() => { setInputMode('text'); setTextInput('nostalgic memories'); }}>
-            💭 Nostalgic
-          </button>
-          
-          {/* Additional moods */}
-          <button type="button" onClick={() => { setInputMode('text'); setTextInput('sleepy and tired'); }}>
-            😴 Sleepy
-          </button>
-          <button type="button" onClick={() => { setInputMode('text'); setTextInput('dreamy and ethereal'); }}>
-            ☁️ Dreamy
-          </button>
-          <button type="button" onClick={() => { setInputMode('text'); setTextInput('confident and powerful'); }}>
-            👑 Confident
-          </button>
-          <button type="button" onClick={() => { setInputMode('text'); setTextInput('playful and silly'); }}>
-            🤪 Playful
-          </button>
-          <button type="button" onClick={() => { setInputMode('text'); setTextInput('groovy and funky'); }}>
-            🕺 Groovy
-          </button>
-          <button type="button" onClick={() => { setInputMode('text'); setTextInput('anxious and stressed'); }}>
-            😰 Anxious
-          </button>
-          <button type="button" onClick={() => { setInputMode('text'); setTextInput('hopeful and optimistic'); }}>
-            🌈 Hopeful
-          </button>
-          <button type="button" onClick={() => { setInputMode('text'); setTextInput('lonely and isolated'); }}>
-            💔 Lonely
-          </button>
-          <button type="button" onClick={() => { setInputMode('text'); setTextInput('road trip adventure'); }}>
-            🚗 Road Trip
-          </button>
-          <button type="button" onClick={() => { setInputMode('text'); setTextInput('cooking in the kitchen'); }}>
-            🍳 Cooking
-          </button>
-          <button type="button" onClick={() => { setInputMode('text'); setTextInput('tropical beach vibes'); }}>
-            🌴 Tropical
-          </button>
-          <button type="button" onClick={() => { setInputMode('text'); setTextInput('dark and mysterious'); }}>
-            🌑 Dark
-          </button>
-          <button type="button" onClick={() => { setInputMode('text'); setTextInput('rebellious punk attitude'); }}>
-            🤘 Rebellious
-          </button>
-          <button type="button" onClick={() => { setInputMode('text'); setTextInput('vintage retro vibes'); }}>
-            📻 Vintage
-          </button>
-          <button type="button" onClick={() => { setInputMode('text'); setTextInput('meditative and spiritual'); }}>
-            🕉️ Meditative
-          </button>
-          <button type="button" onClick={() => { setInputMode('text'); setTextInput('motivated and determined'); }}>
-            🎯 Motivated
-          </button>
+          {/* Mood Examples */}
+          <div className="mood-examples mt-5">
+            <h3 className="text-center mb-4 text-white-50">
+              <small>Try these moods:</small>
+            </h3>
+            
+            <div className="d-flex flex-wrap justify-content-center">
+              {/* Primary moods */}
+              <button 
+                type="button" 
+                className="mood-btn"
+                onClick={() => { setInputMode('text'); setTextInput('happy and cheerful'); }}
+              >
+                😊 Happy
+              </button>
+              <button 
+                type="button" 
+                className="mood-btn"
+                onClick={() => { setInputMode('text'); setTextInput('sad and melancholic'); }}
+              >
+                😢 Sad
+              </button>
+              <button 
+                type="button" 
+                className="mood-btn"
+                onClick={() => { setInputMode('text'); setTextInput('energetic workout vibes'); }}
+              >
+                💪 Workout
+              </button>
+              <button 
+                type="button" 
+                className="mood-btn"
+                onClick={() => { setInputMode('text'); setTextInput('calm and peaceful'); }}
+              >
+                🧘 Calm
+              </button>
+              <button 
+                type="button" 
+                className="mood-btn"
+                onClick={() => { setInputMode('text'); setTextInput('romantic dinner atmosphere'); }}
+              >
+                ❤️ Romantic
+              </button>
+              <button 
+                type="button" 
+                className="mood-btn"
+                onClick={() => { setInputMode('text'); setTextInput('party time celebration'); }}
+              >
+                🎉 Party
+              </button>
+              <button 
+                type="button" 
+                className="mood-btn"
+                onClick={() => { setInputMode('text'); setTextInput('focused study session'); }}
+              >
+                📚 Studying
+              </button>
+              <button 
+                type="button" 
+                className="mood-btn"
+                onClick={() => { setInputMode('text'); setTextInput('nostalgic memories'); }}
+              >
+                💭 Nostalgic
+              </button>
+              
+              {/* Additional moods */}
+              <button 
+                type="button" 
+                className="mood-btn"
+                onClick={() => { setInputMode('text'); setTextInput('sleepy and tired'); }}
+              >
+                😴 Sleepy
+              </button>
+              <button 
+                type="button" 
+                className="mood-btn"
+                onClick={() => { setInputMode('text'); setTextInput('dreamy and ethereal'); }}
+              >
+                ☁️ Dreamy
+              </button>
+              <button 
+                type="button" 
+                className="mood-btn"
+                onClick={() => { setInputMode('text'); setTextInput('confident and powerful'); }}
+              >
+                👑 Confident
+              </button>
+              <button 
+                type="button" 
+                className="mood-btn"
+                onClick={() => { setInputMode('text'); setTextInput('playful and silly'); }}
+              >
+                🤪 Playful
+              </button>
+              <button 
+                type="button" 
+                className="mood-btn"
+                onClick={() => { setInputMode('text'); setTextInput('groovy and funky'); }}
+              >
+                🕺 Groovy
+              </button>
+              <button 
+                type="button" 
+                className="mood-btn"
+                onClick={() => { setInputMode('text'); setTextInput('anxious and stressed'); }}
+              >
+                😰 Anxious
+              </button>
+              <button 
+                type="button" 
+                className="mood-btn"
+                onClick={() => { setInputMode('text'); setTextInput('hopeful and optimistic'); }}
+              >
+                🌈 Hopeful
+              </button>
+              <button 
+                type="button" 
+                className="mood-btn"
+                onClick={() => { setInputMode('text'); setTextInput('lonely and isolated'); }}
+              >
+                💔 Lonely
+              </button>
+              <button 
+                type="button" 
+                className="mood-btn"
+                onClick={() => { setInputMode('text'); setTextInput('road trip adventure'); }}
+              >
+                🚗 Road Trip
+              </button>
+              <button 
+                type="button" 
+                className="mood-btn"
+                onClick={() => { setInputMode('text'); setTextInput('cooking in the kitchen'); }}
+              >
+                🍳 Cooking
+              </button>
+              <button 
+                type="button" 
+                className="mood-btn"
+                onClick={() => { setInputMode('text'); setTextInput('tropical beach vibes'); }}
+              >
+                🌴 Tropical
+              </button>
+              <button 
+                type="button" 
+                className="mood-btn"
+                onClick={() => { setInputMode('text'); setTextInput('dark and mysterious'); }}
+              >
+                🌑 Dark
+              </button>
+              <button 
+                type="button" 
+                className="mood-btn"
+                onClick={() => { setInputMode('text'); setTextInput('rebellious punk attitude'); }}
+              >
+                🤘 Rebellious
+              </button>
+              <button 
+                type="button" 
+                className="mood-btn"
+                onClick={() => { setInputMode('text'); setTextInput('vintage retro vibes'); }}
+              >
+                📻 Vintage
+              </button>
+              <button 
+                type="button" 
+                className="mood-btn"
+                onClick={() => { setInputMode('text'); setTextInput('meditative and spiritual'); }}
+              >
+                🕉️ Meditative
+              </button>
+              <button 
+                type="button" 
+                className="mood-btn"
+                onClick={() => { setInputMode('text'); setTextInput('motivated and determined'); }}
+              >
+                🎯 Motivated
+              </button>
+            </div>
+          </div>
         </div>
       </div>
     </div>
