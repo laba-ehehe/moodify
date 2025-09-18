@@ -21,14 +21,20 @@ const authenticateSpotify = (req, res, next) => {
 // Get user profile
 router.get('/me', authenticateSpotify, async (req, res) => {
   try {
-    const response = await axios.get('https://api.spotify.com/v1/me', {
+    const url = 'https://api.spotify.com/v1/me';
+    console.log('GET:', url);
+    
+    const response = await axios.get(url, {
       headers: {
         'Authorization': `Bearer ${req.spotifyToken}`,
       },
     });
+    
+    console.log('Profile response status:', response.status);
     res.json(response.data);
   } catch (error) {
     console.error('Get profile error:', error.response?.data || error.message);
+    console.error('Error URL:', error.config?.url);
     res.status(error.response?.status || 500).json({
       error: 'Failed to get user profile',
       details: error.response?.data
@@ -47,13 +53,17 @@ router.post('/recommendations', authenticateSpotify, async (req, res) => {
   console.log('Features:', features);
 
   if (!features || Object.keys(features).length === 0) {
+    console.error('No audio features provided');
     return res.status(400).json({ error: 'No audio features provided' });
   }
 
   try {
     // First, verify the token is valid
     try {
-      const profileTest = await axios.get('https://api.spotify.com/v1/me', {
+      const profileUrl = 'https://api.spotify.com/v1/me';
+      console.log('Validating token with GET:', profileUrl);
+      
+      const profileTest = await axios.get(profileUrl, {
         headers: {
           'Authorization': `Bearer ${req.spotifyToken}`,
         }
@@ -61,7 +71,8 @@ router.post('/recommendations', authenticateSpotify, async (req, res) => {
       console.log('Token is valid, user:', profileTest.data.display_name || profileTest.data.id);
     } catch (tokenError) {
       console.error('Token validation failed:', tokenError.response?.status, tokenError.response?.data);
-      return res.status(401).json({ 
+      console.error('Failed URL:', tokenError.config?.url);
+      return res.status(401).json({
         error: 'Invalid or expired token',
         details: tokenError.response?.data
       });
@@ -112,6 +123,7 @@ router.post('/recommendations', authenticateSpotify, async (req, res) => {
       const searchUrl = `https://api.spotify.com/v1/search?q=${encodeURIComponent(searchQuery)}&type=track&limit=50&market=US`;
       
       console.log(`Search attempt ${i + 1} with query: "${searchQuery}"`);
+      console.log('GET:', searchUrl);
       
       try {
         const searchResponse = await axios.get(searchUrl, {
@@ -126,6 +138,8 @@ router.post('/recommendations', authenticateSpotify, async (req, res) => {
         }
       } catch (searchError) {
         console.error(`Search failed for "${searchQuery}":`, searchError.response?.status);
+        console.error('Failed URL:', searchError.config?.url);
+        console.error('Error details:', searchError.response?.data);
       }
     }
 
@@ -140,11 +154,25 @@ router.post('/recommendations', authenticateSpotify, async (req, res) => {
       
       console.log(`Total unique tracks found: ${uniqueTracks.length}, returning top ${limit}`);
       
-      return res.json({
+      // Create the response object
+      const responseData = {
         tracks: uniqueTracks.slice(0, limit),
         seeds: [],
         mood: mood
+      };
+      
+      console.log('=== Sending successful response ===');
+      console.log('Response structure:', {
+        tracks: responseData.tracks.length,
+        firstTrack: responseData.tracks[0] ? {
+          name: responseData.tracks[0].name,
+          artists: responseData.tracks[0].artists?.map(a => a.name),
+          uri: responseData.tracks[0].uri
+        } : null,
+        mood: responseData.mood
       });
+      
+      return res.json(responseData);
     }
 
     // If no tracks found with mood search, try genre-based search
@@ -176,33 +204,40 @@ router.post('/recommendations', authenticateSpotify, async (req, res) => {
       });
 
       if (genreSearch.data.tracks && genreSearch.data.tracks.items.length > 0) {
-        return res.json({
+        const responseData = {
           tracks: genreSearch.data.tracks.items,
           seeds: [],
           mood: mood
-        });
+        };
+        
+        console.log('Genre search successful, returning', responseData.tracks.length, 'tracks');
+        return res.json(responseData);
       }
     } catch (genreError) {
       console.error('Genre search failed:', genreError.response?.status);
+      console.error('Failed URL:', genreError.config?.url);
     }
 
     // Final fallback - just get popular tracks
     console.log('Trying final fallback - popular tracks');
-    const fallbackSearch = await axios.get(
-      `https://api.spotify.com/v1/search?q=year:2020-2024&type=track&limit=${limit}&market=US`,
-      {
-        headers: {
-          'Authorization': `Bearer ${req.spotifyToken}`,
-        }
+    const fallbackUrl = `https://api.spotify.com/v1/search?q=year:2020-2024&type=track&limit=${limit}&market=US`;
+    console.log('GET:', fallbackUrl);
+    
+    const fallbackSearch = await axios.get(fallbackUrl, {
+      headers: {
+        'Authorization': `Bearer ${req.spotifyToken}`,
       }
-    );
+    });
 
     if (fallbackSearch.data.tracks && fallbackSearch.data.tracks.items.length > 0) {
-      return res.json({
+      const responseData = {
         tracks: fallbackSearch.data.tracks.items,
         seeds: [],
         mood: mood
-      });
+      };
+      
+      console.log('Fallback successful, returning', responseData.tracks.length, 'tracks');
+      return res.json(responseData);
     }
 
     throw new Error('Unable to get any tracks from Spotify');
@@ -212,6 +247,7 @@ router.post('/recommendations', authenticateSpotify, async (req, res) => {
     console.error('Error message:', error.message);
     console.error('Error response:', error.response?.data);
     console.error('Error status:', error.response?.status);
+    console.error('Failed URL:', error.config?.url);
     
     res.status(error.response?.status || 500).json({
       error: error.response?.data?.error?.message || 'Failed to get recommendations',
@@ -230,12 +266,15 @@ router.post('/create-playlist', authenticateSpotify, async (req, res) => {
   console.log('Track count:', trackUris?.length || 0);
 
   try {
+    const createUrl = `https://api.spotify.com/v1/users/${userId}/playlists`;
+    console.log('POST:', createUrl);
+    
     const playlistResponse = await axios.post(
-      `https://api.spotify.com/v1/users/${userId}/playlists`,
-      { 
-        name, 
-        description, 
-        public: false 
+      createUrl,
+      {
+        name,
+        description,
+        public: false
       },
       {
         headers: {
@@ -249,8 +288,11 @@ router.post('/create-playlist', authenticateSpotify, async (req, res) => {
     console.log('Playlist created with ID:', playlistId);
 
     if (trackUris && trackUris.length > 0) {
+      const addTracksUrl = `https://api.spotify.com/v1/playlists/${playlistId}/tracks`;
+      console.log('POST:', addTracksUrl);
+      
       await axios.post(
-        `https://api.spotify.com/v1/playlists/${playlistId}/tracks`,
+        addTracksUrl,
         { uris: trackUris },
         {
           headers: {
@@ -265,6 +307,7 @@ router.post('/create-playlist', authenticateSpotify, async (req, res) => {
     res.json(playlistResponse.data);
   } catch (error) {
     console.error('Create playlist error:', error.response?.data || error.message);
+    console.error('Failed URL:', error.config?.url);
     res.status(error.response?.status || 500).json({
       error: 'Failed to create playlist',
       details: error.response?.data

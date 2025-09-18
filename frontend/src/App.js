@@ -131,6 +131,10 @@ function App() {
   };
 
   const generatePlaylist = async (moodData, inputText) => {
+    console.log('=== Starting playlist generation ===');
+    console.log('Mood data:', moodData);
+    console.log('Input text:', inputText);
+    
     setLoading(true);
     setError(null);
     
@@ -138,6 +142,7 @@ function App() {
     const timeout = setTimeout(() => {
       setLoading(false);
       setError('Request timed out. Please try again.');
+      console.error('Playlist generation timed out');
     }, 30000); // 30 second timeout
     
     try {
@@ -151,27 +156,56 @@ function App() {
         limit: 20
       };
 
-      console.log('Sending request data:', requestData);
+      console.log('Sending request to backend:', requestData);
 
-      const recs = await getRecommendations(accessToken, requestData, moodData.mood);
+      const response = await getRecommendations(accessToken, requestData, moodData.mood);
       
       clearTimeout(timeout);
+      
+      console.log('=== Recommendations response received ===');
+      console.log('Response type:', typeof response);
+      console.log('Response keys:', Object.keys(response));
+      console.log('Has tracks?:', !!response.tracks);
+      console.log('Tracks count:', response.tracks?.length);
+      console.log('First track:', response.tracks?.[0]);
+      
+      // Validate response structure
+      if (!response || !response.tracks || !Array.isArray(response.tracks)) {
+        console.error('Invalid response structure:', response);
+        throw new Error('Invalid response from server');
+      }
+      
+      if (response.tracks.length === 0) {
+        console.error('No tracks returned');
+        throw new Error('No tracks found for this mood');
+      }
       
       const playlist = {
         name: `Moodify - ${moodData.mood} vibes`,
         description: `Generated from: "${inputText}" • Energy: ${Math.round(moodData.energy * 100)}% • Positivity: ${Math.round(moodData.valence * 100)}%`,
-        tracks: recs.tracks,
+        tracks: response.tracks,
         mood: moodData.mood,
         audioFeatures: moodData
       };
       
+      console.log('Created playlist object:', {
+        name: playlist.name,
+        trackCount: playlist.tracks.length,
+        firstTrack: playlist.tracks[0]?.name
+      });
+      
       setCurrentPlaylist(playlist);
+      console.log('Playlist set successfully');
     } catch (error) {
       clearTimeout(timeout);
-      console.error('Failed to generate playlist:', error);
+      console.error('=== Playlist generation error ===');
+      console.error('Error object:', error);
+      console.error('Error message:', error.message);
+      console.error('Error response:', error.response);
       
       // If it's a 401 error, try refreshing the token
       if (error.response?.status === 401) {
+        console.log('Attempting token refresh...');
         const refreshed = await refreshTokenFunc();
         if (refreshed) {
           // Retry with new token
@@ -185,26 +219,34 @@ function App() {
               limit: 20
             };
             
-            const recs = await getRecommendations(accessToken, requestData, moodData.mood);
+            console.log('Retrying with refreshed token...');
+            const response = await getRecommendations(accessToken, requestData, moodData.mood);
+            
+            if (!response || !response.tracks || !Array.isArray(response.tracks)) {
+              throw new Error('Invalid response from server');
+            }
             
             const playlist = {
               name: `Moodify - ${moodData.mood} vibes`,
               description: `Generated from: "${inputText}" • Energy: ${Math.round(moodData.energy * 100)}% • Positivity: ${Math.round(moodData.valence * 100)}%`,
-              tracks: recs.tracks,
+              tracks: response.tracks,
               mood: moodData.mood,
               audioFeatures: moodData
             };
             
             setCurrentPlaylist(playlist);
+            console.log('Playlist set successfully after retry');
           } catch (retryError) {
+            console.error('Retry failed:', retryError);
             setError('Failed to generate playlist. Please try again.');
           }
         }
       } else {
-        setError('Failed to generate playlist. Please try again.');
+        setError(error.message || 'Failed to generate playlist. Please try again.');
       }
     } finally {
       setLoading(false);
+      console.log('=== Playlist generation complete ===');
     }
   };
 
@@ -270,6 +312,16 @@ function App() {
     setTokenExpiryTime(null);
     setError(null);
   };
+
+  // Debug logging for state changes
+  useEffect(() => {
+    console.log('=== App State Update ===');
+    console.log('Has access token:', !!accessToken);
+    console.log('Has user:', !!user);
+    console.log('Current playlist:', currentPlaylist);
+    console.log('Loading:', loading);
+    console.log('Error:', error);
+  }, [accessToken, user, currentPlaylist, loading, error]);
 
   if (loading) {
     return <LoadingSpinner />;
