@@ -197,15 +197,15 @@ body {
 
 /* Mood Textarea */
 .mood-textarea {
-  background: rgba(255, 255, 255, 0.05);
-  border: 2px solid transparent;
-  color: var(--spotify-white);
-  border-radius: 15px;
-  padding: 1rem;
-  font-size: 1rem;
-  transition: all 0.3s ease;
-  resize: vertical;
-  min-height: 120px;
+ background: rgba(255, 255, 255, 0.05);
+ border: 2px solid transparent;
+ color: var(--spotify-white);
+ border-radius: 15px;
+ padding: 1rem;
+ font-size: 1rem;
+ transition: all 0.3s ease;
+ resize: vertical;
+ min-height: 120px;
 }
 
 .mood-textarea:focus {
@@ -213,6 +213,11 @@ body {
   border-color: var(--spotify-green);
   background: rgba(255, 255, 255, 0.08);
   box-shadow: 0 0 20px rgba(29, 185, 84, 0.2);
+}
+
+.mood-textarea::placeholder {
+ color: rgba(255, 255, 255, 0.5);
+ opacity: 1;
 }
 
 /* Generate Button */
