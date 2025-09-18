@@ -7,7 +7,6 @@ function Homepage({ onGeneratePlaylist }) {
   const [textInput, setTextInput] = useState('');
   const [selectedEmojis, setSelectedEmojis] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [showMoreExamples, setShowMoreExamples] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -62,12 +61,14 @@ function Homepage({ onGeneratePlaylist }) {
       <div className="mood-input-section">
         <div className="input-mode-toggle">
           <button
+            type="button"
             className={inputMode === 'text' ? 'active' : ''}
             onClick={() => setInputMode('text')}
           >
             ✏️ Text
           </button>
           <button
+            type="button"
             className={inputMode === 'emoji' ? 'active' : ''}
             onClick={() => setInputMode('emoji')}
           >
@@ -106,96 +107,84 @@ function Homepage({ onGeneratePlaylist }) {
       <div className="examples-section">
         <h3>Try these moods:</h3>
         
-        {/* Primary mood examples */}
+        {/* All mood examples displayed at once */}
         <div className="example-buttons">
-          <button onClick={() => { setInputMode('text'); setTextInput('happy and cheerful'); }}>
+          {/* Primary moods */}
+          <button type="button" onClick={() => { setInputMode('text'); setTextInput('happy and cheerful'); }}>
             😊 Happy
           </button>
-          <button onClick={() => { setInputMode('text'); setTextInput('sad and melancholic'); }}>
+          <button type="button" onClick={() => { setInputMode('text'); setTextInput('sad and melancholic'); }}>
             😢 Sad
           </button>
-          <button onClick={() => { setInputMode('text'); setTextInput('energetic workout vibes'); }}>
+          <button type="button" onClick={() => { setInputMode('text'); setTextInput('energetic workout vibes'); }}>
             💪 Workout
           </button>
-          <button onClick={() => { setInputMode('text'); setTextInput('calm and peaceful'); }}>
+          <button type="button" onClick={() => { setInputMode('text'); setTextInput('calm and peaceful'); }}>
             🧘 Calm
           </button>
-          <button onClick={() => { setInputMode('text'); setTextInput('romantic dinner atmosphere'); }}>
+          <button type="button" onClick={() => { setInputMode('text'); setTextInput('romantic dinner atmosphere'); }}>
             ❤️ Romantic
           </button>
-          <button onClick={() => { setInputMode('text'); setTextInput('party time celebration'); }}>
+          <button type="button" onClick={() => { setInputMode('text'); setTextInput('party time celebration'); }}>
             🎉 Party
           </button>
-          <button onClick={() => { setInputMode('text'); setTextInput('focused study session'); }}>
+          <button type="button" onClick={() => { setInputMode('text'); setTextInput('focused study session'); }}>
             📚 Studying
           </button>
-          <button onClick={() => { setInputMode('text'); setTextInput('nostalgic memories'); }}>
+          <button type="button" onClick={() => { setInputMode('text'); setTextInput('nostalgic memories'); }}>
             💭 Nostalgic
           </button>
+          
+          {/* Additional moods */}
+          <button type="button" onClick={() => { setInputMode('text'); setTextInput('sleepy and tired'); }}>
+            😴 Sleepy
+          </button>
+          <button type="button" onClick={() => { setInputMode('text'); setTextInput('dreamy and ethereal'); }}>
+            ☁️ Dreamy
+          </button>
+          <button type="button" onClick={() => { setInputMode('text'); setTextInput('confident and powerful'); }}>
+            👑 Confident
+          </button>
+          <button type="button" onClick={() => { setInputMode('text'); setTextInput('playful and silly'); }}>
+            🤪 Playful
+          </button>
+          <button type="button" onClick={() => { setInputMode('text'); setTextInput('groovy and funky'); }}>
+            🕺 Groovy
+          </button>
+          <button type="button" onClick={() => { setInputMode('text'); setTextInput('anxious and stressed'); }}>
+            😰 Anxious
+          </button>
+          <button type="button" onClick={() => { setInputMode('text'); setTextInput('hopeful and optimistic'); }}>
+            🌈 Hopeful
+          </button>
+          <button type="button" onClick={() => { setInputMode('text'); setTextInput('lonely and isolated'); }}>
+            💔 Lonely
+          </button>
+          <button type="button" onClick={() => { setInputMode('text'); setTextInput('road trip adventure'); }}>
+            🚗 Road Trip
+          </button>
+          <button type="button" onClick={() => { setInputMode('text'); setTextInput('cooking in the kitchen'); }}>
+            🍳 Cooking
+          </button>
+          <button type="button" onClick={() => { setInputMode('text'); setTextInput('tropical beach vibes'); }}>
+            🌴 Tropical
+          </button>
+          <button type="button" onClick={() => { setInputMode('text'); setTextInput('dark and mysterious'); }}>
+            🌑 Dark
+          </button>
+          <button type="button" onClick={() => { setInputMode('text'); setTextInput('rebellious punk attitude'); }}>
+            🤘 Rebellious
+          </button>
+          <button type="button" onClick={() => { setInputMode('text'); setTextInput('vintage retro vibes'); }}>
+            📻 Vintage
+          </button>
+          <button type="button" onClick={() => { setInputMode('text'); setTextInput('meditative and spiritual'); }}>
+            🕉️ Meditative
+          </button>
+          <button type="button" onClick={() => { setInputMode('text'); setTextInput('motivated and determined'); }}>
+            🎯 Motivated
+          </button>
         </div>
-        
-        {/* Show more examples button */}
-        <button 
-          className="show-more-btn"
-          onClick={() => setShowMoreExamples(!showMoreExamples)}
-          style={{ marginTop: '10px', background: 'none', border: '1px solid #ccc', padding: '5px 15px', cursor: 'pointer' }}
-        >
-          {showMoreExamples ? 'Show Less ▲' : 'Show More Moods ▼'}
-        </button>
-        
-        {/* Additional mood examples */}
-        {showMoreExamples && (
-          <div className="example-buttons" style={{ marginTop: '10px' }}>
-            <button onClick={() => { setInputMode('text'); setTextInput('sleepy and tired'); }}>
-              😴 Sleepy
-            </button>
-            <button onClick={() => { setInputMode('text'); setTextInput('dreamy and ethereal'); }}>
-              ☁️ Dreamy
-            </button>
-            <button onClick={() => { setInputMode('text'); setTextInput('confident and powerful'); }}>
-              👑 Confident
-            </button>
-            <button onClick={() => { setInputMode('text'); setTextInput('playful and silly'); }}>
-              🤪 Playful
-            </button>
-            <button onClick={() => { setInputMode('text'); setTextInput('groovy and funky'); }}>
-              🕺 Groovy
-            </button>
-            <button onClick={() => { setInputMode('text'); setTextInput('anxious and stressed'); }}>
-              😰 Anxious
-            </button>
-            <button onClick={() => { setInputMode('text'); setTextInput('hopeful and optimistic'); }}>
-              🌈 Hopeful
-            </button>
-            <button onClick={() => { setInputMode('text'); setTextInput('lonely and isolated'); }}>
-              💔 Lonely
-            </button>
-            <button onClick={() => { setInputMode('text'); setTextInput('road trip adventure'); }}>
-              🚗 Road Trip
-            </button>
-            <button onClick={() => { setInputMode('text'); setTextInput('cooking in the kitchen'); }}>
-              🍳 Cooking
-            </button>
-            <button onClick={() => { setInputMode('text'); setTextInput('tropical beach vibes'); }}>
-              🌴 Tropical
-            </button>
-            <button onClick={() => { setInputMode('text'); setTextInput('dark and mysterious'); }}>
-              🌑 Dark
-            </button>
-            <button onClick={() => { setInputMode('text'); setTextInput('rebellious punk attitude'); }}>
-              🤘 Rebellious
-            </button>
-            <button onClick={() => { setInputMode('text'); setTextInput('vintage retro vibes'); }}>
-              📻 Vintage
-            </button>
-            <button onClick={() => { setInputMode('text'); setTextInput('meditative and spiritual'); }}>
-              🕉️ Meditative
-            </button>
-            <button onClick={() => { setInputMode('text'); setTextInput('motivated and determined'); }}>
-              🎯 Motivated
-            </button>
-          </div>
-        )}
       </div>
     </div>
   );
