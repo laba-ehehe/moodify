@@ -13,8 +13,8 @@ const [currentPlaceholderIndex, setCurrentPlaceholderIndex] = useState(0);
 
 
 const placeholderTexts = [
-  'happy and cheerful',
-  'sad and melancholic',
+  'happy and cheerful :D',
+  'sad and melancholic D:',
   'energetic workout vibes',
   'calm and peaceful',
   'romantic dinner atmosphere',
@@ -67,7 +67,7 @@ useEffect(() => {
     } else {
       // Erasing backward
       if (currentCharIndex >= 0) {
-        setPlaceholderText(`e.g., '${currentText.substring(0, currentCharIndex)}'`);
+        setPlaceholderText(`${currentText.substring(0, currentCharIndex)}`);
         currentCharIndex--;
         typingTimeout = setTimeout(animateTyping, 50);
       } else {
