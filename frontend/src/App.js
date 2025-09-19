@@ -329,7 +329,29 @@ function App() {
   }
 
   if (!accessToken) {
+    const [hoveredMood, setHoveredMood] = useState(null);
+    const [currentColorIndex, setCurrentColorIndex] = useState(0);
+    const moodColors = [
+      { name: 'happy', color: '#FFD93D', emoji: '😊' },
+      { name: 'energetic', color: '#FF6B6B', emoji: '⚡' },
+      { name: 'calm', color: '#4ECDC4', emoji: '🌊' },
+      { name: 'romantic', color: '#FF69B4', emoji: '💕' },
+      { name: 'party', color: '#A855F7', emoji: '🎉' },
+      { name: 'dreamy', color: '#818CF8', emoji: '☁️' }
+    ];
+
+    useEffect(() => {
+      const interval = setInterval(() => {
+        setCurrentColorIndex((prev) => (prev + 1) % moodColors.length);
+      }, 3000);
+      return () => clearInterval(interval);
+    }, []);
+
+
     return (
+
+
+
       // <div className="app-container spotify-dark">
       //   <div className="container-fluid min-vh-100 d-flex align-items-center justify-content-center">
       //     <div className="text-center login-box">
@@ -350,64 +372,189 @@ function App() {
       //     </div>
       //   </div>
       // </div>
-      <div className="app-container login-screen">
-        {/* Animated background elements */}
-        <div className="animated-bg">
-          <div className="floating-emoji emoji-1">🎵</div>
-          <div className="floating-emoji emoji-2">🎸</div>
-          <div className="floating-emoji emoji-3">🎹</div>
-          <div className="floating-emoji emoji-4">🎤</div>
-          <div className="floating-emoji emoji-5">🎧</div>
-          <div className="floating-emoji emoji-6">💿</div>
-          <div className="floating-emoji emoji-7">🎺</div>
-          <div className="floating-emoji emoji-8">🥁</div>
-          <div className="gradient-orb orb-1"></div>
-          <div className="gradient-orb orb-2"></div>
-          <div className="gradient-orb orb-3"></div>
-        </div>
+
+
+
+      // <div className="app-container login-screen">
+      //   {/* Animated background elements */}
+      //   <div className="animated-bg">
+      //     <div className="floating-emoji emoji-1">🎵</div>
+      //     <div className="floating-emoji emoji-2">🎸</div>
+      //     <div className="floating-emoji emoji-3">🎹</div>
+      //     <div className="floating-emoji emoji-4">🎤</div>
+      //     <div className="floating-emoji emoji-5">🎧</div>
+      //     <div className="floating-emoji emoji-6">💿</div>
+      //     <div className="floating-emoji emoji-7">🎺</div>
+      //     <div className="floating-emoji emoji-8">🥁</div>
+      //     <div className="gradient-orb orb-1"></div>
+      //     <div className="gradient-orb orb-2"></div>
+      //     <div className="gradient-orb orb-3"></div>
+      //   </div>
         
-        <div className="container-fluid min-vh-100 d-flex align-items-center justify-content-center">
-          <div className="login-content">
-            {/* Mood cards showcase */}
-            <div className="mood-showcase">
-              <div className="mood-card-preview card-happy">
-                <span className="mood-emoji">😊</span>
-                <span className="mood-label">Happy</span>
-              </div>
-              <div className="mood-card-preview card-energetic">
-                <span className="mood-emoji">⚡</span>
-                <span className="mood-label">Energetic</span>
-              </div>
-              <div className="mood-card-preview card-calm">
-                <span className="mood-emoji">🧘</span>
-                <span className="mood-label">Calm</span>
-              </div>
-              <div className="mood-card-preview card-romantic">
-                <span className="mood-emoji">💕</span>
-                <span className="mood-label">Romantic</span>
-              </div>
+      //   <div className="container-fluid min-vh-100 d-flex align-items-center justify-content-center">
+      //     <div className="login-content">
+      //       {/* Mood cards showcase */}
+      //       <div className="mood-showcase">
+      //         <div className="mood-card-preview card-happy">
+      //           <span className="mood-emoji">😊</span>
+      //           <span className="mood-label">Happy</span>
+      //         </div>
+      //         <div className="mood-card-preview card-energetic">
+      //           <span className="mood-emoji">⚡</span>
+      //           <span className="mood-label">Energetic</span>
+      //         </div>
+      //         <div className="mood-card-preview card-calm">
+      //           <span className="mood-emoji">🧘</span>
+      //           <span className="mood-label">Calm</span>
+      //         </div>
+      //         <div className="mood-card-preview card-romantic">
+      //           <span className="mood-emoji">💕</span>
+      //           <span className="mood-label">Romantic</span>
+      //         </div>
+      //       </div>
+            
+      //       {/* Main login box */}
+      //       <div className="text-center login-box-enhanced">
+      //         <div className="logo-container mb-4">
+      //           <div className="logo-pulse">
+      //             <span className="logo-emoji-main">🎵</span>
+      //           </div>
+      //         </div>
+              
+      //         <h1 className="display-3 mb-2 text-white fw-bold login-title">
+      //           moodify
+      //         </h1>
+              
+      //         <div className="tagline-container mb-5">
+      //           <p className="tagline-text">
+      //             Your mood, your music
+      //           </p>
+      //           <div className="feature-pills">
+      //             <span className="feature-tag">AI-Powered</span>
+      //             <span className="feature-tag">20+ Moods</span>
+      //             <span className="feature-tag">Instant Playlists</span>
+      //           </div>
+      //         </div>
+              
+      //         {error && (
+      //           <div className="alert alert-danger mb-4" role="alert">
+      //             {error}
+      //           </div>
+      //         )}
+              
+      //         <button onClick={handleLogin} className="btn-spotify-enhanced">
+      //           <span className="btn-content">
+      //             <i className="fab fa-spotify me-2"></i>
+      //             Connect with Spotify
+      //           </span>
+      //           <span className="btn-glow"></span>
+      //         </button>
+              
+      //         <p className="login-disclaimer mt-4">
+      //           Free • No credit card • Works with your Spotify account
+      //         </p>
+      //       </div>
+            
+      //       {/* Bottom wave animation */}
+      //       <div className="wave-container">
+      //         <svg className="waves" viewBox="0 24 150 28" preserveAspectRatio="none">
+      //           <defs>
+      //             <path id="wave" d="M-160 44c30 0 58-18 88-18s 58 18 88 18 58-18 88-18 58 18 88 18 v44h-352z" />
+      //           </defs>
+      //           <g className="wave-parallax">
+      //             <use href="#wave" x="48" y="0" fill="rgba(29,185,84,0.1)" />
+      //             <use href="#wave" x="48" y="3" fill="rgba(29,185,84,0.05)" />
+      //             <use href="#wave" x="48" y="5" fill="rgba(29,185,84,0.03)" />
+      //           </g>
+      //         </svg>
+      //       </div>
+      //     </div>
+      //   </div>
+      // </div> 
+
+
+
+      <div className="app-container login-screen-v2">
+        {/* Dynamic background based on current mood */}
+        <div 
+          className="dynamic-bg-layer"
+          style={{
+            background: `radial-gradient(circle at 30% 50%, ${moodColors[currentColorIndex].color}20 0%, transparent 50%),
+                        radial-gradient(circle at 70% 50%, ${moodColors[currentColorIndex].color}10 0%, transparent 50%)`
+          }}
+      />
+      
+      <div className="container-fluid min-vh-100">
+        <div className="row min-vh-100">
+          {/* Left side - Interactive mood grid */}
+          <div className="col-lg-6 d-none d-lg-flex align-items-center justify-content-center mood-grid-container">
+            <div className="mood-grid">
+              {moodColors.map((mood, index) => (
+                <div
+                  key={mood.name}
+                  className={`mood-tile ${hoveredMood === mood.name ? 'active' : ''} ${currentColorIndex === index ? 'current' : ''}`}
+                  onMouseEnter={() => setHoveredMood(mood.name)}
+                  onMouseLeave={() => setHoveredMood(null)}
+                  style={{
+                    '--mood-color': mood.color,
+                    animationDelay: `${index * 0.1}s`
+                  }}
+                >
+                  <span className="mood-tile-emoji">{mood.emoji}</span>
+                  <span className="mood-tile-name">{mood.name}</span>
+                </div>
+              ))}
             </div>
             
-            {/* Main login box */}
-            <div className="text-center login-box-enhanced">
-              <div className="logo-container mb-4">
-                <div className="logo-pulse">
-                  <span className="logo-emoji-main">🎵</span>
+            {/* Floating text */}
+            <div className="floating-text">
+              <p>AI-powered mood detection</p>
+              <p>Instant playlist generation</p>
+              <p>Perfectly matched songs</p>
+            </div>
+          </div>
+          
+          {/* Right side - Login form */}
+          <div className="col-lg-6 d-flex align-items-center justify-content-center login-form-container">
+            <div className="login-form-box">
+              {/* Animated logo */}
+              <div className="logo-modern">
+                <div className="logo-lines">
+                  <span className="line line-1"></span>
+                  <span className="line line-2"></span>
+                  <span className="line line-3"></span>
+                  <span className="line line-4"></span>
+                  <span className="line line-5"></span>
                 </div>
               </div>
               
-              <h1 className="display-3 mb-2 text-white fw-bold login-title">
-                moodify
+              <h1 className="brand-title">
+                <span className="brand-m">m</span>
+                <span className="brand-o1">o</span>
+                <span className="brand-o2">o</span>
+                <span className="brand-d">d</span>
+                <span className="brand-i">i</span>
+                <span className="brand-f">f</span>
+                <span className="brand-y">y</span>
               </h1>
               
-              <div className="tagline-container mb-5">
-                <p className="tagline-text">
-                  Your mood, your music
-                </p>
-                <div className="feature-pills">
-                  <span className="feature-tag">AI-Powered</span>
-                  <span className="feature-tag">20+ Moods</span>
-                  <span className="feature-tag">Instant Playlists</span>
+              <p className="brand-subtitle">
+                Transform your mood into music
+              </p>
+              
+              {/* Stats */}
+              <div className="login-stats">
+                <div className="stat">
+                  <span className="stat-number">1M+</span>
+                  <span className="stat-label">Songs</span>
+                </div>
+                <div className="stat">
+                  <span className="stat-number">24</span>
+                  <span className="stat-label">Moods</span>
+                </div>
+                <div className="stat">
+                  <span className="stat-number">∞</span>
+                  <span className="stat-label">Playlists</span>
                 </div>
               </div>
               
@@ -417,35 +564,50 @@ function App() {
                 </div>
               )}
               
-              <button onClick={handleLogin} className="btn-spotify-enhanced">
-                <span className="btn-content">
-                  <i className="fab fa-spotify me-2"></i>
-                  Connect with Spotify
+              <button 
+                onClick={handleLogin} 
+                className="btn-spotify-v2"
+                style={{
+                  '--hover-color': moodColors[currentColorIndex].color
+                }}
+              >
+                <span className="btn-icon">
+                  <i className="fab fa-spotify"></i>
                 </span>
-                <span className="btn-glow"></span>
+                <span className="btn-text">Continue with Spotify</span>
+                <span className="btn-arrow">→</span>
               </button>
               
-              <p className="login-disclaimer mt-4">
-                Free • No credit card • Works with your Spotify account
-              </p>
-            </div>
-            
-            {/* Bottom wave animation */}
-            <div className="wave-container">
-              <svg className="waves" viewBox="0 24 150 28" preserveAspectRatio="none">
-                <defs>
-                  <path id="wave" d="M-160 44c30 0 58-18 88-18s 58 18 88 18 58-18 88-18 58 18 88 18 v44h-352z" />
-                </defs>
-                <g className="wave-parallax">
-                  <use href="#wave" x="48" y="0" fill="rgba(29,185,84,0.1)" />
-                  <use href="#wave" x="48" y="3" fill="rgba(29,185,84,0.05)" />
-                  <use href="#wave" x="48" y="5" fill="rgba(29,185,84,0.03)" />
-                </g>
-              </svg>
+              <div className="login-footer">
+                <p>Free forever • No credit card required</p>
+                <p className="security-note">
+                  <span className="lock-icon">🔒</span>
+                  We never post without permission
+                </p>
+              </div>
             </div>
           </div>
         </div>
       </div>
+      
+      {/* Mobile version - simplified */}
+      <div className="mobile-login d-lg-none">
+        <div className="mobile-content">
+          <div className="mobile-logo">
+            <span className="mobile-logo-icon">🎵</span>
+          </div>
+          <h1 className="mobile-title">moodify</h1>
+          <p className="mobile-subtitle">Your mood, your music</p>
+          <button onClick={handleLogin} className="btn-spotify-mobile">
+            <i className="fab fa-spotify me-2"></i>
+            Connect with Spotify
+          </button>
+        </div>
+      </div>
+    </div>
+
+
+
     );
   }
 

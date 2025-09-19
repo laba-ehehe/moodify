@@ -56,7 +56,7 @@ useEffect(() => {
     if (isTypingForward) {
       // Typing forward
       if (currentCharIndex <= currentText.length) {
-        setPlaceholderText(`e.g., '${currentText.substring(0, currentCharIndex)}'`);
+        setPlaceholderText(`${currentText.substring(0, currentCharIndex)}`);
         currentCharIndex++;
         typingTimeout = setTimeout(animateTyping, 80);
       } else {
