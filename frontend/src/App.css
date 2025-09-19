@@ -158,16 +158,59 @@ body {
 .hero-title {
   font-size: clamp(2rem, 5vw, 3.5rem);
   font-weight: 900;
-  background: linear-gradient(135deg, var(--pastel-pink), var(--pastel-purple), var(--pastel-blue));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
   margin-bottom: 1rem;
   line-height: 1.2;
   text-align: center;
   max-width: 800px;
   margin-left: auto;
   margin-right: auto;
+  letter-spacing: -0.5px;
+  
+  /* Animated gradient text */
+  background: linear-gradient(
+    45deg,
+    var(--pastel-pink),
+    var(--pastel-purple),
+    var(--pastel-blue),
+    var(--pastel-mint),
+    var(--spotify-green),
+    var(--pastel-yellow),
+    var(--pastel-pink)
+  );
+  background-size: 300% 300%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: gradientShift 6s ease-in-out infinite;
+}
+
+@keyframes gradientShift {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+/* Fallback for browsers that don't support background-clip */
+@supports not (-webkit-background-clip: text) {
+  .hero-title {
+    color: var(--spotify-white);
+    animation: colorCycle 4s ease-in-out infinite;
+  }
+  
+  @keyframes colorCycle {
+    0% { color: var(--pastel-pink); }
+    20% { color: var(--pastel-purple); }
+    40% { color: var(--pastel-blue); }
+    60% { color: var(--pastel-mint); }
+    80% { color: var(--spotify-green); }
+    100% { color: var(--pastel-pink); }
+  }
 }
 
 /* Input Mode Toggle */
