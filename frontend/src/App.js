@@ -164,7 +164,7 @@ function App() {
     
     // Track when loading started
     const loadingStartTime = Date.now();
-    const minimumLoadingTime = 3000; // 3 seconds minimum
+    const minimumLoadingTime = 5000; // 5 seconds minimum
     
     // Set a timeout to prevent infinite loading
     const timeout = setTimeout(() => {
