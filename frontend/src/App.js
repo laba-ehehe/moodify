@@ -183,7 +183,7 @@ function App() {
       
       const playlist = {
         name: `moodify - ${moodData.mood} vibes`,
-        description: `Generated from: "${inputText}" • Energy: ${Math.round(moodData.energy * 100)}% • Positivity: ${Math.round(moodData.valence * 100)}% • Danceability: ${Math.round(moodData.danceability * 100)}%`,
+        description: `Generated from: "${inputText}"`,
         tracks: response.tracks,
         mood: moodData.mood,
         audioFeatures: moodData
@@ -229,7 +229,7 @@ function App() {
             
             const playlist = {
               name: `moodify - ${moodData.mood} vibes`,
-              description: `Generated from: "${inputText}" • Energy: ${Math.round(moodData.energy * 100)}% • Positivity: ${Math.round(moodData.valence * 100)}% • Danceability: ${Math.round(moodData.danceability * 100)}%`,
+              description: `Generated from: "${inputText}"`,
               tracks: response.tracks,
               mood: moodData.mood,
               audioFeatures: moodData

@@ -202,43 +202,55 @@ body {
 
 /* Mood Textarea */
 .mood-textarea {
-  background: rgba(255, 255, 255, 0.05);
-  border: 2px solid transparent;
-  color: var(--spotify-white);
-  border-radius: 15px;
-  padding: 1rem;
-  font-size: 1rem;
-  transition: all 0.3s ease;
-  resize: vertical;
-  min-height: 120px;
+ background: rgba(255, 255, 255, 0.05);
+ border: 2px solid transparent;
+ color: var(--spotify-white);
+ border-radius: 15px;
+ padding: 1rem;
+ font-size: 1rem;
+ transition: all 0.3s ease;
+ resize: vertical;
+ min-height: 120px;
+ animation: textColorPulse 4s ease-in-out infinite;
 }
 
 .mood-textarea::placeholder {
-  color: rgba(255, 255, 255, 0.5);
-  opacity: 1;
+ color: rgba(255, 255, 255, 0.5);
+ opacity: 1;
 }
 
 .mood-textarea:focus {
-  outline: none;
-  border-color: var(--spotify-green);
-  background: rgba(255, 255, 255, 0.08);
-  box-shadow: 0 0 20px rgba(29, 185, 84, 0.2);
+ outline: none;
+ border-color: var(--spotify-green);
+ background: rgba(255, 255, 255, 0.08);
+ box-shadow: 0 0 20px rgba(29, 185, 84, 0.2);
+ /* Change to green while typing/focused */
+ color: var(--spotify-green);
+ animation: none;
 }
 
-/* Generate Button */
-.generate-btn {
-  background: linear-gradient(135deg, var(--spotify-green), var(--pastel-mint));
-  color: var(--spotify-black);
-  border: none;
-  border-radius: 100px;
-  padding: 1rem 3rem;
-  font-size: 1.1rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  transition: all 0.3s ease;
-  position: relative;
-  overflow: hidden;
+/* When textarea has content but not focused */
+.mood-textarea:not(:placeholder-shown):not(:focus) {
+ color: var(--pastel-purple);
+}
+
+/* Subtle color animation when idle */
+@keyframes textColorPulse {
+ 0% {
+   color: var(--spotify-white);
+ }
+ 25% {
+   color: var(--pastel-blue);
+ }
+ 50% {
+   color: var(--pastel-mint);
+ }
+ 75% {
+   color: var(--pastel-pink);
+ }
+ 100% {
+   color: var(--spotify-white);
+ }
 }
 
 .generate-btn:hover:not(:disabled) {
