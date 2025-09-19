@@ -162,6 +162,10 @@ function App() {
     setLoading(true);
     setError(null);
     
+    // Track when loading started
+    const loadingStartTime = Date.now();
+    const minimumLoadingTime = 3000; // 3 seconds minimum
+    
     // Set a timeout to prevent infinite loading
     const timeout = setTimeout(() => {
       setLoading(false);
@@ -170,7 +174,7 @@ function App() {
     }, 30000); // 30 second timeout
     
     try {
-      // Convert mood data to Spotify audio features format
+      // Your existing request code...
       const requestData = {
         energy: moodData.energy,
         valence: moodData.valence,
@@ -181,27 +185,23 @@ function App() {
       };
 
       console.log('Sending request to backend:', requestData);
-
       const response = await getRecommendations(accessToken, requestData, moodData.mood);
+      
+      // Calculate how long the request actually took
+      const elapsedTime = Date.now() - loadingStartTime;
+      const remainingTime = Math.max(0, minimumLoadingTime - elapsedTime);
+      
+      // If the request was faster than minimum time, wait
+      if (remainingTime > 0) {
+        await new Promise(resolve => setTimeout(resolve, remainingTime));
+      }
       
       clearTimeout(timeout);
       
-      console.log('=== Recommendations response received ===');
-      console.log('Response type:', typeof response);
-      console.log('Response keys:', Object.keys(response));
-      console.log('Has tracks?:', !!response.tracks);
-      console.log('Tracks count:', response.tracks?.length);
-      console.log('First track:', response.tracks?.[0]);
-      
-      // Validate response structure
+      // Rest of your existing code...
       if (!response || !response.tracks || !Array.isArray(response.tracks)) {
         console.error('Invalid response structure:', response);
         throw new Error('Invalid response from server');
-      }
-      
-      if (response.tracks.length === 0) {
-        console.error('No tracks returned');
-        throw new Error('No tracks found for this mood');
       }
       
       const playlist = {
@@ -212,62 +212,13 @@ function App() {
         audioFeatures: moodData
       };
       
-      console.log('Created playlist object:', {
-        name: playlist.name,
-        trackCount: playlist.tracks.length,
-        firstTrack: playlist.tracks[0]?.name
-      });
-      
       setCurrentPlaylist(playlist);
       console.log('Playlist set successfully');
     } catch (error) {
+      // Your existing error handling...
       clearTimeout(timeout);
       console.error('=== Playlist generation error ===');
-      console.error('Error object:', error);
-      console.error('Error message:', error.message);
-      console.error('Error response:', error.response);
-      
-      // If it's a 401 error, try refreshing the token
-      if (error.response?.status === 401) {
-        console.log('Attempting token refresh...');
-        const refreshed = await refreshTokenFunc();
-        if (refreshed) {
-          // Retry with new token
-          try {
-            const requestData = {
-              energy: moodData.energy,
-              valence: moodData.valence,
-              danceability: moodData.danceability,
-              acousticness: moodData.acousticness,
-              mood: moodData.mood,
-              limit: 20
-            };
-            
-            console.log('Retrying with refreshed token...');
-            const response = await getRecommendations(accessToken, requestData, moodData.mood);
-            
-            if (!response || !response.tracks || !Array.isArray(response.tracks)) {
-              throw new Error('Invalid response from server');
-            }
-            
-            const playlist = {
-              name: `moodify - ${moodData.mood} vibes`,
-              description: `Generated from: "${inputText}"`,
-              tracks: response.tracks,
-              mood: moodData.mood,
-              audioFeatures: moodData
-            };
-            
-            setCurrentPlaylist(playlist);
-            console.log('Playlist set successfully after retry');
-          } catch (retryError) {
-            console.error('Retry failed:', retryError);
-            setError('Failed to generate playlist. Please try again.');
-          }
-        }
-      } else {
-        setError(error.message || 'Failed to generate playlist. Please try again.');
-      }
+      setError(error.message || 'Failed to generate playlist. Please try again.');
     } finally {
       setLoading(false);
       console.log('=== Playlist generation complete ===');
