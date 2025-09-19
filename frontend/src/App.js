@@ -387,7 +387,6 @@ function App() {
             
               {/* Floating text */}
               <div className="floating-text">
-                <p>AI-powered mood detection</p>
                 <p>Instant playlist generation</p>
                 <p>Perfectly matched songs</p>
               </div>
@@ -418,7 +417,7 @@ function App() {
                 </h1>
               
                 <p className="brand-subtitle">
-                  Transform your mood into music
+                  transform your mood into music
                 </p>
               
                 {/* Stats */}
@@ -458,11 +457,7 @@ function App() {
                 </button>
               
                 <div className="login-footer">
-                  <p>Free forever • No credit card required</p>
-                  <p className="security-note">
-                    <span className="lock-icon">🔒</span>
-                    We never post without permission
-                  </p>
+                  <p>By Lan Anh Do :D</p>
                 </div>
               </div>
             </div>
