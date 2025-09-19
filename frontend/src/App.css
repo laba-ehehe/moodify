@@ -253,6 +253,23 @@ body {
  }
 }
 
+/* Generate Button */
+.generate-btn {
+  background: linear-gradient(135deg, var(--spotify-green), var(--pastel-mint));
+  color: var(--spotify-black);
+  border: none;
+  border-radius: 100px;
+  padding: 1rem 3rem;
+  font-size: 1.1rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+}
+
 .generate-btn:hover:not(:disabled) {
   transform: translateY(-2px);
   box-shadow: 0 10px 30px rgba(29, 185, 84, 0.4);
