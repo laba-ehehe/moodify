@@ -8,6 +8,12 @@ const emojiMoodMap = {
   '😊': { energy: 0.6, valence: 0.8, danceability: 0.5, mood: 'happy' },
   '😍': { energy: 0.7, valence: 0.9, danceability: 0.6, mood: 'happy' },
   '🥰': { energy: 0.5, valence: 0.8, danceability: 0.4, mood: 'romantic' },
+  '😸': { energy: 0.8, valence: 0.9, danceability: 0.7, mood: 'happy' },
+  '😻': { energy: 0.7, valence: 0.9, danceability: 0.6, mood: 'happy' },
+  '🤗': { energy: 0.5, valence: 0.8, danceability: 0.4, mood: 'happy' },
+  '🌞': { energy: 0.7, valence: 0.8, danceability: 0.6, mood: 'happy' },
+  '🌻': { energy: 0.6, valence: 0.8, danceability: 0.5, mood: 'happy' },
+  '🐶': { energy: 0.7, valence: 0.8, danceability: 0.6, mood: 'happy' },
   
   // Energetic/Party
   '🔥': { energy: 0.9, valence: 0.8, danceability: 0.9, mood: 'energetic' },
@@ -16,6 +22,14 @@ const emojiMoodMap = {
   '🕺': { energy: 0.9, valence: 0.8, danceability: 0.9, mood: 'party' },
   '⚡': { energy: 1.0, valence: 0.7, danceability: 0.8, mood: 'energetic' },
   '🚀': { energy: 0.9, valence: 0.8, danceability: 0.7, mood: 'energetic' },
+  '🎆': { energy: 0.9, valence: 0.9, danceability: 0.9, mood: 'party' },
+  '🌟': { energy: 0.8, valence: 0.8, danceability: 0.7, mood: 'excited' },
+  '💥': { energy: 1.0, valence: 0.7, danceability: 0.8, mood: 'energetic' },
+  '🔊': { energy: 0.9, valence: 0.7, danceability: 0.8, mood: 'party' },
+  '🔔': { energy: 0.7, valence: 0.6, danceability: 0.6, mood: 'energetic' },
+  '🤩': { energy: 0.8, valence: 0.9, danceability: 0.7, mood: 'excited' },
+  '🥳': { energy: 0.9, valence: 0.9, danceability: 0.9, mood: 'party' },
+  '💫': { energy: 0.7, valence: 0.8, danceability: 0.6, mood: 'excited' },
   
   // Sad/Melancholic
   '😢': { energy: 0.2, valence: 0.2, danceability: 0.2, mood: 'sad' },
@@ -24,6 +38,9 @@ const emojiMoodMap = {
   '💔': { energy: 0.3, valence: 0.1, danceability: 0.2, mood: 'lonely' },
   '😞': { energy: 0.2, valence: 0.2, danceability: 0.2, mood: 'sad' },
   '🌧️': { energy: 0.3, valence: 0.4, danceability: 0.2, mood: 'melancholic' },
+  '😿': { energy: 0.2, valence: 0.2, danceability: 0.2, mood: 'sad' },
+  '🥺': { energy: 0.3, valence: 0.3, danceability: 0.2, mood: 'lonely' },
+  '🥀': { energy: 0.3, valence: 0.4, danceability: 0.2, mood: 'melancholic' },
   
   // Calm/Relaxed
   '😌': { energy: 0.3, valence: 0.7, danceability: 0.3, mood: 'calm' },
@@ -32,18 +49,39 @@ const emojiMoodMap = {
   '🌙': { energy: 0.2, valence: 0.6, danceability: 0.2, mood: 'sleepy' },
   '☁️': { energy: 0.2, valence: 0.5, danceability: 0.2, mood: 'dreamy' },
   '🌊': { energy: 0.3, valence: 0.6, danceability: 0.3, mood: 'calm' },
+  '🌅': { energy: 0.3, valence: 0.7, danceability: 0.3, mood: 'hopeful' },
+  '🌄': { energy: 0.3, valence: 0.6, danceability: 0.3, mood: 'calm' },
+  '🕯️': { energy: 0.2, valence: 0.6, danceability: 0.2, mood: 'meditative' },
+  '🛁': { energy: 0.1, valence: 0.7, danceability: 0.1, mood: 'calm' },
+  '🍵': { energy: 0.3, valence: 0.6, danceability: 0.2, mood: 'calm' },
+  '🌫️': { energy: 0.2, valence: 0.4, danceability: 0.2, mood: 'dreamy' },
+  '❄️': { energy: 0.3, valence: 0.6, danceability: 0.3, mood: 'calm' },
+  '💧': { energy: 0.2, valence: 0.5, danceability: 0.2, mood: 'calm' },
+  '🐼': { energy: 0.4, valence: 0.7, danceability: 0.3, mood: 'calm' },
+  '🦋': { energy: 0.5, valence: 0.8, danceability: 0.5, mood: 'dreamy' },
   
   // Angry/Intense
   '😠': { energy: 0.8, valence: 0.2, danceability: 0.6, mood: 'angry' },
   '😡': { energy: 0.9, valence: 0.1, danceability: 0.7, mood: 'angry' },
   '🤬': { energy: 0.9, valence: 0.1, danceability: 0.7, mood: 'rebellious' },
   '👿': { energy: 0.8, valence: 0.2, danceability: 0.6, mood: 'dark' },
+  '👺': { energy: 0.9, valence: 0.1, danceability: 0.7, mood: 'angry' },
+  '💢': { energy: 0.8, valence: 0.2, danceability: 0.6, mood: 'angry' },
+  '🗯️': { energy: 0.7, valence: 0.2, danceability: 0.5, mood: 'angry' },
+  '🌋': { energy: 0.9, valence: 0.2, danceability: 0.6, mood: 'angry' },
+  '⛈️': { energy: 0.5, valence: 0.2, danceability: 0.3, mood: 'dark' },
   
   // Workout/Motivation
   '💪': { energy: 0.8, valence: 0.7, danceability: 0.6, mood: 'workout' },
   '🏃': { energy: 0.9, valence: 0.6, danceability: 0.5, mood: 'workout' },
   '🥇': { energy: 0.7, valence: 0.8, danceability: 0.6, mood: 'confident' },
   '🎯': { energy: 0.7, valence: 0.7, danceability: 0.5, mood: 'focused' },
+  '🚴': { energy: 0.8, valence: 0.7, danceability: 0.6, mood: 'workout' },
+  '🏊': { energy: 0.7, valence: 0.6, danceability: 0.5, mood: 'workout' },
+  '🤾': { energy: 0.8, valence: 0.7, danceability: 0.7, mood: 'workout' },
+  '🧗': { energy: 0.9, valence: 0.7, danceability: 0.5, mood: 'workout' },
+  '🥊': { energy: 0.9, valence: 0.6, danceability: 0.6, mood: 'workout' },
+  '🤺': { energy: 0.8, valence: 0.7, danceability: 0.6, mood: 'workout' },
   
   // Love/Romance
   '❤️': { energy: 0.5, valence: 0.8, danceability: 0.4, mood: 'romantic' },
@@ -51,22 +89,55 @@ const emojiMoodMap = {
   '💖': { energy: 0.6, valence: 0.9, danceability: 0.5, mood: 'romantic' },
   '😘': { energy: 0.5, valence: 0.8, danceability: 0.4, mood: 'romantic' },
   '🌹': { energy: 0.4, valence: 0.8, danceability: 0.3, mood: 'romantic' },
+  '😙': { energy: 0.5, valence: 0.8, danceability: 0.4, mood: 'romantic' },
+  '😚': { energy: 0.5, valence: 0.8, danceability: 0.4, mood: 'romantic' },
+  '💑': { energy: 0.4, valence: 0.9, danceability: 0.3, mood: 'romantic' },
+  '💐': { energy: 0.4, valence: 0.8, danceability: 0.3, mood: 'romantic' },
+  '💌': { energy: 0.4, valence: 0.8, danceability: 0.3, mood: 'romantic' },
+  '💒': { energy: 0.5, valence: 0.9, danceability: 0.4, mood: 'romantic' },
+  '💞': { energy: 0.5, valence: 0.9, danceability: 0.4, mood: 'romantic' },
+  '🌷': { energy: 0.4, valence: 0.8, danceability: 0.3, mood: 'romantic' },
+  
+  // Anxious/Stressed
+  '😰': { energy: 0.6, valence: 0.3, danceability: 0.4, mood: 'anxious' },
+  '😣': { energy: 0.4, valence: 0.2, danceability: 0.3, mood: 'anxious' },
+  '😖': { energy: 0.4, valence: 0.2, danceability: 0.3, mood: 'anxious' },
+  '😵': { energy: 0.6, valence: 0.2, danceability: 0.4, mood: 'anxious' },
+  '🤯': { energy: 0.8, valence: 0.3, danceability: 0.5, mood: 'anxious' },
+  '😓': { energy: 0.5, valence: 0.3, danceability: 0.4, mood: 'anxious' },
+  '🥵': { energy: 0.7, valence: 0.3, danceability: 0.5, mood: 'anxious' },
+  '🥶': { energy: 0.4, valence: 0.3, danceability: 0.3, mood: 'anxious' },
+  
+  // Playful/Fun
+  '😋': { energy: 0.6, valence: 0.8, danceability: 0.5, mood: 'playful' },
+  '🤭': { energy: 0.6, valence: 0.8, danceability: 0.5, mood: 'playful' },
+  '🎀': { energy: 0.5, valence: 0.8, danceability: 0.4, mood: 'playful' },
+  '🎃': { energy: 0.6, valence: 0.5, danceability: 0.5, mood: 'playful' },
+  '🐱': { energy: 0.5, valence: 0.8, danceability: 0.4, mood: 'playful' },
+  
+  // Technology/Modern
+  '🎮': { energy: 0.6, valence: 0.7, danceability: 0.5, mood: 'focused' },
+  '📱': { energy: 0.5, valence: 0.6, danceability: 0.4, mood: 'focused' },
+  '💻': { energy: 0.4, valence: 0.6, danceability: 0.3, mood: 'focused' },
+  
+  // Dark/Mysterious
+  '🕸️': { energy: 0.4, valence: 0.2, danceability: 0.3, mood: 'dark' },
+  '⚰️': { energy: 0.3, valence: 0.1, danceability: 0.2, mood: 'dark' },
+  '👹': { energy: 0.8, valence: 0.2, danceability: 0.6, mood: 'dark' },
+  '☠️': { energy: 0.7, valence: 0.2, danceability: 0.5, mood: 'rebellious' },
+  '🌚': { energy: 0.4, valence: 0.3, danceability: 0.3, mood: 'dark' },
   
   // Other moods
   '🤔': { energy: 0.4, valence: 0.5, danceability: 0.3, mood: 'contemplative' },
   '😎': { energy: 0.6, valence: 0.7, danceability: 0.6, mood: 'cool' },
-  '🤗': { energy: 0.5, valence: 0.8, danceability: 0.4, mood: 'happy' },
-  '😋': { energy: 0.6, valence: 0.8, danceability: 0.5, mood: 'playful' },
-  '🤩': { energy: 0.8, valence: 0.9, danceability: 0.7, mood: 'excited' },
-  '🥳': { energy: 0.9, valence: 0.9, danceability: 0.9, mood: 'party' },
-  '😰': { energy: 0.6, valence: 0.3, danceability: 0.4, mood: 'anxious' },
   '🌈': { energy: 0.6, valence: 0.8, danceability: 0.5, mood: 'hopeful' },
   '🌴': { energy: 0.5, valence: 0.7, danceability: 0.6, mood: 'tropical' },
   '🚗': { energy: 0.6, valence: 0.7, danceability: 0.5, mood: 'road-trip' },
   '📚': { energy: 0.3, valence: 0.6, danceability: 0.2, mood: 'studying' },
   '🍳': { energy: 0.4, valence: 0.7, danceability: 0.4, mood: 'cooking' },
   '🎸': { energy: 0.7, valence: 0.6, danceability: 0.6, mood: 'groovy' },
-  '🎭': { energy: 0.5, valence: 0.5, danceability: 0.4, mood: 'vintage' }
+  '🎭': { energy: 0.5, valence: 0.5, danceability: 0.4, mood: 'vintage' },
+  '⭐': { energy: 0.6, valence: 0.8, danceability: 0.5, mood: 'hopeful' }
 };
 
 // Text sentiment keywords with mood mappings

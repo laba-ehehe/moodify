@@ -591,14 +591,32 @@ body {
   font-size: clamp(1.75rem, 4vw, 2.5rem);
   font-weight: 900;
   margin-bottom: 0.5rem;
-  background: linear-gradient(135deg, 
-    var(--pastel-pink), 
-    var(--pastel-purple), 
-    var(--spotify-green));
+  letter-spacing: -0.5px;
+  
+  /* Animated gradient text */
+  background: linear-gradient(
+    45deg,
+    var(--pastel-pink),
+    var(--pastel-purple),
+    var(--pastel-blue),
+    var(--pastel-mint),
+    var(--spotify-green),
+    var(--pastel-yellow),
+    var(--pastel-pink)
+  );
+  background-size: 300% 300%;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
-  letter-spacing: -0.5px;
+  animation: gradientShift 6s ease-in-out infinite;
+}
+
+/* Fallback for browsers that don't support background-clip */
+@supports not (-webkit-background-clip: text) {
+  .playlist-main-title {
+    color: var(--spotify-white);
+    animation: colorCycle 4s ease-in-out infinite;
+  }
 }
 
 .playlist-subtitle {
@@ -1114,5 +1132,299 @@ body {
   .toggle-btn {
     padding: 0.5rem 1rem;
     font-size: 0.9rem;
+  }
+}
+
+/* Enhanced Login Page Styles */
+.app-container.spotify-dark {
+  background: linear-gradient(135deg, 
+    #121212 0%, 
+    #1a0f2e 25%, 
+    #2d1b4e 50%, 
+    #1a0f2e 75%, 
+    #121212 100%);
+  background-size: 400% 400%;
+  animation: gradientWave 15s ease infinite;
+  position: relative;
+  overflow: hidden;
+}
+
+@keyframes gradientWave {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* Floating particles background */
+.app-container.spotify-dark::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: 
+    radial-gradient(circle at 20% 80%, rgba(29, 185, 84, 0.1) 0%, transparent 50%),
+    radial-gradient(circle at 80% 20%, rgba(255, 179, 217, 0.1) 0%, transparent 50%),
+    radial-gradient(circle at 40% 40%, rgba(179, 217, 255, 0.1) 0%, transparent 50%);
+  animation: floatParticles 20s ease-in-out infinite;
+  z-index: 1;
+}
+
+@keyframes floatParticles {
+  0%, 100% { 
+    transform: translateY(0) rotate(0deg);
+    opacity: 0.7;
+  }
+  50% { 
+    transform: translateY(-20px) rotate(180deg);
+    opacity: 1;
+  }
+}
+
+/* Enhanced Login Box */
+.login-box {
+  max-width: 450px;
+  margin: 0 auto;
+  padding: 3rem 2.5rem;
+  background: linear-gradient(135deg, 
+    rgba(255, 255, 255, 0.1) 0%,
+    rgba(255, 255, 255, 0.05) 100%);
+  border-radius: 30px;
+  backdrop-filter: blur(20px);
+  box-shadow: 
+    0 20px 60px rgba(0, 0, 0, 0.4),
+    0 0 80px rgba(29, 185, 84, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  position: relative;
+  z-index: 10;
+  transform: perspective(1000px) rotateX(2deg);
+  transition: all 0.3s ease;
+}
+
+.login-box:hover {
+  transform: perspective(1000px) rotateX(0deg) translateY(-5px);
+  box-shadow: 
+    0 30px 80px rgba(0, 0, 0, 0.5),
+    0 0 100px rgba(29, 185, 84, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+/* Animated logo emoji */
+.login-box .logo-emoji {
+  font-size: 6rem;
+  display: inline-block;
+  animation: logoFloat 4s ease-in-out infinite;
+  filter: drop-shadow(0 0 20px rgba(29, 185, 84, 0.3));
+  position: relative;
+}
+
+@keyframes logoFloat {
+  0%, 100% { 
+    transform: translateY(0) rotate(0deg) scale(1);
+  }
+  25% { 
+    transform: translateY(-10px) rotate(5deg) scale(1.05);
+  }
+  50% { 
+    transform: translateY(-15px) rotate(0deg) scale(1.1);
+  }
+  75% { 
+    transform: translateY(-10px) rotate(-5deg) scale(1.05);
+  }
+}
+
+/* Enhanced title with multiple animations */
+.login-box h1 {
+  text-transform: lowercase;
+  font-weight: 900;
+  font-size: 3.5rem;
+  background: linear-gradient(
+    45deg,
+    var(--pastel-pink),
+    var(--pastel-purple),
+    var(--spotify-green),
+    var(--pastel-blue),
+    var(--pastel-mint),
+    var(--pastel-yellow),
+    var(--pastel-pink)
+  );
+  background-size: 300% 300%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: titleGradient 6s ease-in-out infinite;
+  letter-spacing: -2px;
+  text-shadow: 0 0 30px rgba(29, 185, 84, 0.3);
+}
+
+@keyframes titleGradient {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
+/* Enhanced subtitle with typewriter effect */
+.login-box p.lead {
+  font-size: 1.1rem;
+  color: rgba(255, 255, 255, 0.8);
+  margin-bottom: 2.5rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.login-box p.lead::after {
+  content: '|';
+  animation: blink 1s infinite;
+  color: var(--spotify-green);
+  font-weight: bold;
+}
+
+@keyframes blink {
+  0%, 50% { opacity: 1; }
+  51%, 100% { opacity: 0; }
+}
+
+/* Ultra-enhanced Spotify button */
+.btn-spotify {
+  background: linear-gradient(135deg, 
+    var(--spotify-green) 0%, 
+    #1ed760 50%, 
+    var(--spotify-green) 100%);
+  background-size: 200% 200%;
+  color: var(--spotify-black);
+  border: none;
+  border-radius: 50px;
+  font-weight: 800;
+  font-size: 1.1rem;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  padding: 1.2rem 3rem;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  box-shadow: 
+    0 10px 30px rgba(29, 185, 84, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+.btn-spotify::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, 
+    transparent, 
+    rgba(255, 255, 255, 0.3), 
+    transparent);
+  transition: left 0.6s ease;
+}
+
+.btn-spotify:hover {
+  background-position: 100% 0;
+  transform: translateY(-3px) scale(1.05);
+  box-shadow: 
+    0 20px 40px rgba(29, 185, 84, 0.4),
+    0 0 60px rgba(29, 185, 84, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.3);
+  animation: buttonPulse 2s ease-in-out infinite;
+}
+
+.btn-spotify:hover::before {
+  left: 100%;
+}
+
+@keyframes buttonPulse {
+  0%, 100% { box-shadow: 
+    0 20px 40px rgba(29, 185, 84, 0.4),
+    0 0 60px rgba(29, 185, 84, 0.2); 
+  }
+  50% { box-shadow: 
+    0 25px 50px rgba(29, 185, 84, 0.5),
+    0 0 80px rgba(29, 185, 84, 0.3); 
+  }
+}
+
+/* Spotify icon animation */
+.btn-spotify i.fab.fa-spotify {
+  animation: iconSpin 3s linear infinite;
+  margin-right: 0.8rem;
+  font-size: 1.3rem;
+}
+
+@keyframes iconSpin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Add floating music notes */
+.login-box::after {
+  content: '♪ ♫ ♪ ♫ ♪';
+  position: absolute;
+  top: -50px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 1.5rem;
+  color: rgba(29, 185, 84, 0.6);
+  animation: floatingNotes 8s ease-in-out infinite;
+  pointer-events: none;
+}
+
+@keyframes floatingNotes {
+  0%, 100% { 
+    transform: translateX(-50%) translateY(0);
+    opacity: 0.6;
+  }
+  50% { 
+    transform: translateX(-50%) translateY(-20px);
+    opacity: 1;
+  }
+}
+
+/* Error alert enhancement */
+.alert-danger {
+  background: linear-gradient(135deg, 
+    rgba(255, 68, 68, 0.2) 0%, 
+    rgba(255, 68, 68, 0.1) 100%);
+  border: 1px solid rgba(255, 68, 68, 0.4);
+  color: #ffffff;
+  border-radius: 20px;
+  backdrop-filter: blur(10px);
+  animation: alertSlideIn 0.5s ease;
+  box-shadow: 0 10px 30px rgba(255, 68, 68, 0.2);
+}
+
+@keyframes alertSlideIn {
+  from { 
+    opacity: 0; 
+    transform: translateY(-20px); 
+  }
+  to { 
+    opacity: 1; 
+    transform: translateY(0); 
+  }
+}
+
+/* Add responsive magic */
+@media (max-width: 576px) {
+  .login-box {
+    margin: 1rem;
+    padding: 2rem 1.5rem;
+    border-radius: 25px;
+  }
+  
+  .login-box h1 {
+    font-size: 2.5rem;
+  }
+  
+  .login-box .logo-emoji {
+    font-size: 4rem;
+  }
+  
+  .btn-spotify {
+    padding: 1rem 2rem;
+    font-size: 1rem;
   }
 }
