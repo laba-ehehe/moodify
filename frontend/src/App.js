@@ -176,7 +176,6 @@ function App() {
     try {
       // Your existing request code...
       const requestData = {
-        energy: moodData.energy,
         valence: moodData.valence,
         danceability: moodData.danceability,
         acousticness: moodData.acousticness,
@@ -440,7 +439,15 @@ function App() {
         <div className="container-fluid">
           <a className="navbar-brand d-flex align-items-center" href="#">
             <span className="logo-emoji me-2">🎵</span>
-            <span className="fw-bold">moodify</span>
+            <span className="fw-bold">
+              <span className="brand-m">m</span>
+              <span className="brand-o1">o</span>
+              <span className="brand-o2">o</span>
+              <span className="brand-d">d</span>
+              <span className="brand-i">i</span>
+              <span className="brand-f">f</span>
+              <span className="brand-y">y</span>
+            </span>
           </a>
           <div className="d-flex align-items-center">
             {user && (
