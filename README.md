@@ -1,205 +1,191 @@
-# 🎵 Moodify
+# 🎵 moodify - music That Matches Your Mood
 
-Generate Spotify playlists that perfectly match your mood using AI-powered sentiment analysis.
+<p align="center">
+  <img src="frontend/public/logo.svg" alt="Moodify Logo" width="200"/>
+</p>
 
-![Moodify Screenshot](screenshot.png)
+<p align="center">
+  <a href="https://moodify-orpin.vercel.app/">Live Demo</a> •
+  <a href="#features">Features</a> •
+  <a href="#installation">Installation</a> •
+  <a href="#usage">Usage</a> •
+  <a href="#tech-stack">Tech Stack</a>
+</p>
+
+## 🌟 Overview
+
+Moodify is a web application that generates personalized Spotify playlists based on your current mood. Simply express how you're feeling through emojis or text, and Moodify will create the perfect soundtrack for your emotional state.
+
+**Live Application:** [https://moodify-orpin.vercel.app/](https://moodify-orpin.vercel.app/)
 
 ## ✨ Features
 
-- **Mood Analysis**: Analyze your mood through text descriptions or emoji selection
-- **Smart Recommendations**: Get personalized Spotify track recommendations based on your emotional state
-- **Spotify Integration**: Save generated playlists directly to your Spotify account
-- **Audio Previews**: Listen to 30-second previews of recommended tracks
-- **Beautiful UI**: Modern, Spotify-inspired dark theme with smooth animations
-- **Responsive Design**: Works seamlessly on desktop and mobile devices
+- 🎭 **Mood Input Options**: Express your mood through emojis or descriptive text
+- 🎵 **Smart Playlist Generation**: Leverages Spotify's audio features (valence, energy, danceability) to match your mood
+- 👀 **Track Preview**: Listen to 30-second previews before saving
+- 💾 **One-Click Save**: Save generated playlists directly to your Spotify library
+- 📊 **Mood Visualization**: See how your mood translates to audio features
+- 📱 **Responsive Design**: Works seamlessly on desktop and mobile devices
+- 🔒 **Secure Authentication**: OAuth 2.0 PKCE flow for safe Spotify integration
 
-## 🚀 Live Demo
+## 🚀 Installation
 
-Visit [Moodify](https://moodify-orpin.vercel.app) to try it out!
+### Prerequisites
 
-## 🎯 How It Works
+- Node.js (v14 or higher)
+- npm or yarn
+- Spotify Developer Account ([create one here](https://developer.spotify.com/))
 
-1. **Express Your Mood**: Choose between text input or emoji selection to describe how you're feeling
-2. **AI Analysis**: Our mood analyzer processes your input and maps it to audio features
-3. **Smart Matching**: The app searches Spotify for tracks that match your emotional state
-4. **Personalized Playlist**: Get a curated playlist with 20 tracks that fit your vibe
-5. **Save & Enjoy**: Save the playlist to your Spotify account and start listening
+### Setup
+
+1. **Clone the repository**
+```bash
+   git clone https://github.com/laba-ehehe/moodify.git
+   cd moodify
+```
+
+2. **Set up Spotify App**
+   - Go to [Spotify Developer Dashboard](https://developer.spotify.com/dashboard)
+   - Create a new app
+   - Add redirect URIs:
+     - `http://localhost:3000/callback` (development)
+     - `https://your-domain.com/callback` (production)
+   - Copy your Client ID and Client Secret
+
+3. **Backend Setup**
+```bash
+   cd backend
+   npm install
+   
+   # Create .env file
+   echo "CLIENT_ID=your_spotify_client_id
+   CLIENT_SECRET=your_spotify_client_secret
+   REDIRECT_URI=http://localhost:3000/callback
+   FRONTEND_URL=http://localhost:3001
+   PORT=3000" > .env
+```
+
+4. **Frontend Setup**
+```bash
+   cd ../frontend
+   npm install
+   
+   # Create .env file
+   echo "REACT_APP_BACKEND_URL=http://localhost:3000" > .env
+```
+
+5. **Run the Application**
+   
+   In separate terminals:
+```bash
+   # Terminal 1 - Backend
+   cd backend
+   npm start
+   
+   # Terminal 2 - Frontend
+   cd frontend
+   npm start
+```
+
+   Visit `http://localhost:3001` to use the application!
+
+## 💻 Usage
+
+1. **Login**: Click "Login with Spotify" to authenticate
+2. **Express Your Mood**: 
+   - Choose from emoji options (😊 🔥 😴 😔 💪)
+   - Or type a description like "calm but motivated"
+3. **Generate Playlist**: Click "Generate Playlist" to create your mood-matched tracks
+4. **Preview & Save**: Listen to previews and save the playlist to your Spotify library
 
 ## 🛠️ Tech Stack
 
 ### Frontend
-- **React**: Modern UI framework
-- **Bootstrap**: Responsive design system
-- **CSS3**: Custom animations and Spotify-inspired styling
-- **Axios**: HTTP client for API requests
+- **React** (v18.2.0) - UI framework
+- **Vite** - Build tool and dev server
+- **CSS3** - Styling with animations and gradients
+- **Axios** - HTTP client for API requests
 
 ### Backend
-- **Node.js**: Server runtime
-- **Express.js**: Web application framework
-- **Spotify Web API**: Music data and playlist creation
-- **PKCE Authentication**: Secure OAuth 2.0 flow
+- **Node.js** - Runtime environment
+- **Express.js** - Web framework
+- **Spotify Web API** - Music data and playback
+- **OAuth 2.0 PKCE** - Secure authentication
 
-## 📦 Installation
+### Deployment
+- **Frontend**: Vercel
+- **Backend**: Render
 
-### Prerequisites
-- Node.js (v14 or higher)
-- npm or yarn
-- Spotify Developer Account
+## 📊 Mood Mapping Logic
 
-### Backend Setup
+Moodify translates emotions into Spotify's audio features:
 
-1. Clone the repository:
+| Mood | Valence | Energy | Danceability | Acousticness |
+|------|---------|--------|--------------|--------------|
+| 😊 Happy | High | High | High | Low |
+| 🔥 Energetic | Medium | Very High | High | Low |
+| 😴 Calm | Medium | Low | Low | High |
+| 😔 Sad | Low | Low | Low | Medium |
+| 💪 Focused | Medium | Medium | Medium | Low |
+
+## 🧪 Testing
 ```bash
-git clone https://github.com/yourusername/moodify.git
-cd moodify/backend
+# Frontend tests
+cd frontend
+npm test
+
+# Backend tests (if implemented)
+cd backend
+npm test
 ```
 
-2. Install dependencies:
-```bash
-npm install
+## 📁 Project Structure
 ```
-
-3. Create a `.env` file:
-```env
-PORT=5000
-SPOTIFY_CLIENT_ID=your_spotify_client_id
-SPOTIFY_REDIRECT_URI=http://localhost:3000
-FRONTEND_URL=http://localhost:3000
-NODE_ENV=development
+moodify/
+├── backend/
+│   ├── routes/          # API endpoints
+│   ├── utils/           # Helper functions
+│   └── server.js        # Express server
+├── frontend/
+│   ├── public/          # Static assets
+│   ├── src/
+│   │   ├── components/  # React components
+│   │   └── services/    # API services
+│   └── package.json
+└── README.md
 ```
-
-4. Start the backend server:
-```bash
-npm start
-```
-
-### Frontend Setup
-
-1. Navigate to the frontend directory:
-```bash
-cd ../frontend
-```
-
-2. Install dependencies:
-```bash
-npm install
-```
-
-3. Start the development server:
-```bash
-npm start
-```
-
-The application will open at `http://localhost:3000`
-
-## 🎨 Mood Categories
-
-Moodify supports 25+ different mood categories including:
-
-- **Happy**: Upbeat, cheerful, joyful tracks
-- **Sad**: Melancholic, emotional, reflective music
-- **Energetic**: High-energy workout and pump-up songs
-- **Calm**: Peaceful, relaxing, meditative tracks
-- **Romantic**: Love songs and intimate ballads
-- **Party**: Dance hits and celebration anthems
-- **Focused**: Concentration music for work/study
-- **Nostalgic**: Classic hits and throwback tracks
-- **And many more!**
-
-## 🔧 Configuration
-
-### Spotify API Setup
-
-1. Go to [Spotify Developer Dashboard](https://developer.spotify.com/dashboard)
-2. Create a new app
-3. Add redirect URI: `http://localhost:5000/auth/callback` (development)
-4. Copy your Client ID to the `.env` file
-
-### Audio Features Mapping
-
-The mood analyzer converts emotions into Spotify's audio features:
-
-- **Energy**: How intense and powerful the track feels (0.0 - 1.0)
-- **Valence**: How positive/happy the track sounds (0.0 - 1.0)  
-- **Danceability**: How suitable the track is for dancing (0.0 - 1.0)
-- **Acousticness**: Amount of acoustic vs electronic elements
-- **Tempo**: Speed of the track in BPM
-
-## 📱 API Endpoints
-
-### Authentication
-- `GET /auth/login` - Initiate Spotify OAuth flow
-- `GET /auth/callback` - Handle OAuth callback
-- `POST /auth/refresh` - Refresh access token
-
-### Mood Analysis
-- `POST /api/mood/analyze-text` - Analyze mood from text
-- `POST /api/mood/analyze-emoji` - Analyze mood from emojis
-
-### Spotify Integration
-- `GET /api/spotify/me` - Get user profile
-- `POST /api/spotify/recommendations` - Get track recommendations
-- `POST /api/spotify/create-playlist` - Save playlist to Spotify
-
-## 🎵 Example Requests
-
-### Text Mood Analysis
-```javascript
-POST /api/mood/analyze-text
-{
-  "text": "feeling energetic and ready to conquer the world"
-}
-```
-
-### Emoji Mood Analysis
-```javascript
-POST /api/mood/analyze-emoji
-{
-  "emojis": ["🔥", "💪", "🚀"]
-}
-```
-
-## 🚀 Deployment
-
-### Backend (Render)
-1. Connect your GitHub repository to Render
-2. Set environment variables in Render dashboard
-3. Deploy the backend service
-
-### Frontend (Vercel)
-1. Connect repository to Vercel
-2. Set build command: `npm run build`
-3. Deploy the frontend
 
 ## 🤝 Contributing
 
+Contributions are welcome! Please feel free to submit a Pull Request.
+
 1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit changes (`git commit -m 'Add amazing feature'`)
-4. Push to branch (`git push origin feature/amazing-feature`)
+2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
 5. Open a Pull Request
 
-## 📄 License
+## 🔮 Future Enhancements
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+- [ ] Machine learning for improved mood classification
+- [ ] Blend multiple moods for complex emotional states
+- [ ] Integration with user's listening history
+- [ ] Shareable playlist links
+- [ ] Social features for collaborative mood playlists
+- [ ] Support for Apple Music and YouTube Music
 
 ## 🙏 Acknowledgments
 
-- Spotify Web API for music data
-- React community for amazing tools
-- Bootstrap for responsive design components
-- All the amazing artists whose music makes this possible
+- **WiCSE x AmEx Shadowing Program** for the opportunity
+- **UmaMaheswari Balu Gnanamoorthy** (Mentor) for guidance and support
+- **Spotify Web API** for the amazing music data
 
-## 📞 Support
+## 📧 Contact
 
-If you encounter any issues or have questions:
+Lan Anh Do - [lananhdo2905@gmail.com](mailto:lananhdo2905@gmail.com)
 
-1. Check the [Issues](https://github.com/yourusername/moodify/issues) page
-2. Create a new issue with detailed description
-3. Include error messages and steps to reproduce
+Project Link: [https://github.com/laba-ehehe/moodify](https://github.com/laba-ehehe/moodify)
 
 ---
 
-Made with ❤️ and lots of ☕ by Lan Anh
-
-**Happy listening! 🎧**
+<p align="center">Made with 💜 and 🎵 by Lan Anh Do</p>
