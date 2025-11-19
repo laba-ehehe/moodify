@@ -1,4 +1,4 @@
-# 🎵 moodify - music That Matches Your Mood
+# 🎵 moodify - music that matches your mood 🎵
 
 
 
