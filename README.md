@@ -1,22 +1,18 @@
 # 🎵 moodify - music That Matches Your Mood
 
-<p align="center">
-  <img src="frontend/public/logo.svg" alt="Moodify Logo" width="200"/>
-</p>
 
-<p align="center">
-  <a href="https://moodify-orpin.vercel.app/">Live Demo</a> •
-  <a href="#features">Features</a> •
-  <a href="#installation">Installation</a> •
-  <a href="#usage">Usage</a> •
-  <a href="#tech-stack">Tech Stack</a>
-</p>
 
 ## 🌟 Overview
 
 Moodify is a web application that generates personalized Spotify playlists based on your current mood. Simply express how you're feeling through emojis or text, and Moodify will create the perfect soundtrack for your emotional state.
 
 **Live Application:** [https://moodify-orpin.vercel.app/](https://moodify-orpin.vercel.app/)
+
+## 🎬 Demo
+
+Check out Moodify in action:
+- 📺 **[Video Walkthrough](https://youtu.be/QSve4HMbnQM)** - See the complete user flow from login to playlist creation
+- 🌐 **[Live Application](https://moodify-orpin.vercel.app/)** - Try it yourself with your Spotify account
 
 ## ✨ Features
 
